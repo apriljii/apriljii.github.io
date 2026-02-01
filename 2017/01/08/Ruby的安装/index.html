@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang=ch>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="1. RVM安装 执行命令  curl -L https:&#x2F;&#x2F;get.rvm.io | bash -s stable g   ,过程有点点慢，稍等一下就安装好了  载入 RVM 环境，source ~&#x2F;.rvm&#x2F;scripts&#x2F;rvm  这下就安装成功啦，用 rvm -v 查看一下版本号   2. 用 RVM 安装 Ruby 环境 首先来看看ruby有哪些版本，执行命令 rvm list know">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ruby的安装">
+<meta property="og:url" content="https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/index.html">
+<meta property="og:site_name" content="April">
+<meta property="og:description" content="1. RVM安装 执行命令  curl -L https:&#x2F;&#x2F;get.rvm.io | bash -s stable g   ,过程有点点慢，稍等一下就安装好了  载入 RVM 环境，source ~&#x2F;.rvm&#x2F;scripts&#x2F;rvm  这下就安装成功啦，用 rvm -v 查看一下版本号   2. 用 RVM 安装 Ruby 环境 首先来看看ruby有哪些版本，执行命令 rvm list know">
+<meta property="og:locale">
+<meta property="og:image" content="https://apriljii.github.io/img/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/44.png">
+<meta property="og:image" content="https://apriljii.github.io/img/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/43.png">
+<meta property="article:published_time" content="2017-01-08T08:21:48.000Z">
+<meta property="article:modified_time" content="2026-01-12T07:55:11.535Z">
+<meta property="article:author" content="April Ji">
+<meta property="article:tag" content="ruby">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://apriljii.github.io/img/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/44.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Ruby的安装</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+	<!-- mermaid -->
+	<script src='https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js'></script>
+	<script>
+		mermaid.initialize({
+			startOnLoad: true,
+			theme: 'dark',
+			securityLevel: 'loose'
+		});
+	</script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2017/02/10/gulp%E5%AE%9E%E7%8E%B0%E5%89%8D%E7%AB%AF%E9%9D%9E%E8%A6%86%E7%9B%96%E5%BC%8F%E5%8F%91%E5%B8%83/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2016/08/23/%E6%B5%85%E6%9E%90JS%E7%9A%84%E5%8E%9F%E5%9E%8B%E9%93%BE/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&text=Ruby的安装"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&title=Ruby的安装"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&is_video=false&description=Ruby的安装"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Ruby的安装&body=Check out this article: https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&title=Ruby的安装"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&title=Ruby的安装"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&title=Ruby的安装"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&title=Ruby的安装"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&name=Ruby的安装&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&t=Ruby的安装"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc-container">
+        <div id="toc-toggle" class="toc-toggle-btn">
+          <i class="fa-solid fa-list"></i>
+          <span>Table of Contents</span>
+        </div>
+        <div id="toc" style="display: none;">
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-RVM%E5%AE%89%E8%A3%85"><span class="toc-number">1.</span> <span class="toc-text">1. RVM安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%94%A8-RVM-%E5%AE%89%E8%A3%85-Ruby-%E7%8E%AF%E5%A2%83"><span class="toc-number">2.</span> <span class="toc-text">2. 用 RVM 安装 Ruby 环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E8%AE%BE%E7%BD%AERuby%E7%89%88%E6%9C%AC"><span class="toc-number">3.</span> <span class="toc-text">3. 设置Ruby版本</span></a></li></ol>
+        </div>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Ruby的安装
+    </h1>
+    
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">April Ji</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2017-01-08T08:21:48.000Z" class="dt-published" itemprop="datePublished">2017-01-08</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/ruby/" rel="tag">ruby</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="1-RVM安装"><a href="#1-RVM安装" class="headerlink" title="1. RVM安装"></a>1. RVM安装</h2><ol>
+<li><p>执行命令  curl -L <a href="https://get.rvm.io">https://get.rvm.io</a> | bash -s stable g   ,过程有点点慢，稍等一下就安装好了</p>
+</li>
+<li><p>载入 RVM 环境，source ~/.rvm/scripts/rvm</p>
+</li>
+<li><p>这下就安装成功啦，用 rvm -v 查看一下版本号</p>
+</li>
+</ol>
+<h2 id="2-用-RVM-安装-Ruby-环境"><a href="#2-用-RVM-安装-Ruby-环境" class="headerlink" title="2. 用 RVM 安装 Ruby 环境"></a>2. 用 RVM 安装 Ruby 环境</h2><ol>
+<li><p>首先来看看ruby有哪些版本，执行命令 rvm list known<br><img src="/img/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/44.png" alt="43"></p>
+</li>
+<li><p>可以安装啦 ，新手可以找一个稳定的版本下载 rvm install 2.3.3，好漫长</p>
+</li>
+<li><p>查询现在安装的版本 rvm list</p>
+</li>
+</ol>
+<h2 id="3-设置Ruby版本"><a href="#3-设置Ruby版本" class="headerlink" title="3. 设置Ruby版本"></a>3. 设置Ruby版本</h2><ol>
+<li><p>rvm 2.0.0 –default ，可设置为系统默认版本</p>
+</li>
+<li><p>Test，  执行ruby -v</p>
+</li>
+<li><p>访问ruby网址如果有问题，可以使用淘宝的网址<br>  $gem source -r <a href="https://rubygems.org/">https://rubygems.org/</a><br>  $ gem source -a <a href="https://ruby.taobao.org">https://ruby.taobao.org</a></p>
+<p>看看输出结果：$ gem sources -l</p>
+</li>
+</ol>
+<p><img src="/img/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/43.png" alt="43"></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="https://github.com/apriljii">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-RVM%E5%AE%89%E8%A3%85"><span class="toc-number">1.</span> <span class="toc-text">1. RVM安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%94%A8-RVM-%E5%AE%89%E8%A3%85-Ruby-%E7%8E%AF%E5%A2%83"><span class="toc-number">2.</span> <span class="toc-text">2. 用 RVM 安装 Ruby 环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E8%AE%BE%E7%BD%AERuby%E7%89%88%E6%9C%AC"><span class="toc-number">3.</span> <span class="toc-text">3. 设置Ruby版本</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&text=Ruby的安装"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&title=Ruby的安装"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&is_video=false&description=Ruby的安装"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Ruby的安装&body=Check out this article: https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&title=Ruby的安装"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&title=Ruby的安装"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&title=Ruby的安装"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&title=Ruby的安装"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&name=Ruby的安装&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2017/01/08/Ruby%E7%9A%84%E5%AE%89%E8%A3%85/&t=Ruby的安装"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    April Ji
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

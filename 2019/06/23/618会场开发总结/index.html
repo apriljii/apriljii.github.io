@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang=ch>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="背景与会场效果                      你的浏览器不支持内嵌视频。你可以 下载视频 观看。             该会场是2019年京东618购物节期间首个推出的主会场页面。作为高流量电商场景的典型代表，该页面整合了多项前端技术实践：      - **组件化架构**：将复杂页面拆分为可复用的组件单元，支持灵活的楼层配置和动态渲染     - **主题切换机制**：支持 ban">
+<meta property="og:type" content="article">
+<meta property="og:title" content="618会场开发总结">
+<meta property="og:url" content="https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="April">
+<meta property="og:description" content="背景与会场效果                      你的浏览器不支持内嵌视频。你可以 下载视频 观看。             该会场是2019年京东618购物节期间首个推出的主会场页面。作为高流量电商场景的典型代表，该页面整合了多项前端技术实践：      - **组件化架构**：将复杂页面拆分为可复用的组件单元，支持灵活的楼层配置和动态渲染     - **主题切换机制**：支持 ban">
+<meta property="og:locale">
+<meta property="og:image" content="https://typekit.files.wordpress.com/2016/08/lock-basic.png">
+<meta property="og:image" content="https://typekit.files.wordpress.com/2016/08/lock-rephrased.png?w=800&h=137">
+<meta property="og:image" content="https://www.w3cplus.com/sites/default/files/blogs/2018/1806/mobile-design-adapter-36.png">
+<meta property="og:image" content="https://camo.githubusercontent.com/0d7072c5a5b674d757c35b8f00b7562d6bba292b/68747470733a2f2f692e6c6f6c692e6e65742f323031372f30382f32392f353961346437353532643239392e706e67">
+<meta property="og:image" content="https://apriljii.github.io/img/201806230/fps.gif">
+<meta property="og:image" content="https://apriljii.github.io/img/201806230/fps2.jpg">
+<meta property="og:image" content="https://apriljii.github.io/img/201806230/optimize.jpg">
+<meta property="og:image" content="https://apriljii.github.io/img/201806230/1.jpeg">
+<meta property="og:image" content="https://apriljii.github.io/img/201806230/2.jpeg">
+<meta property="og:image" content="https://apriljii.github.io/img/201806230/3.jpeg">
+<meta property="og:image" content="https://v8.js.cn/_img/cost-of-javascript-2019/json.svg">
+<meta property="article:published_time" content="2019-06-23T08:39:21.000Z">
+<meta property="article:modified_time" content="2026-01-30T12:51:27.747Z">
+<meta property="article:author" content="April Ji">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://typekit.files.wordpress.com/2016/08/lock-basic.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>618会场开发总结</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+	<!-- mermaid -->
+	<script src='https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js'></script>
+	<script>
+		mermaid.initialize({
+			startOnLoad: true,
+			theme: 'dark',
+			securityLevel: 'loose'
+		});
+	</script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&text=618会场开发总结"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&title=618会场开发总结"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&is_video=false&description=618会场开发总结"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=618会场开发总结&body=Check out this article: https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&title=618会场开发总结"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&title=618会场开发总结"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&title=618会场开发总结"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&title=618会场开发总结"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&name=618会场开发总结&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&t=618会场开发总结"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc-container">
+        <div id="toc-toggle" class="toc-toggle-btn">
+          <i class="fa-solid fa-list"></i>
+          <span>Table of Contents</span>
+        </div>
+        <div id="toc" style="display: none;">
+          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%83%8C%E6%99%AF%E4%B8%8E%E4%BC%9A%E5%9C%BA%E6%95%88%E6%9E%9C"><span class="toc-number">1.</span> <span class="toc-text">背景与会场效果</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E9%98%B6%E6%AE%B5"><span class="toc-number">2.</span> <span class="toc-text">设计阶段</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BC%80%E5%8F%91%E9%98%B6%E6%AE%B5"><span class="toc-number">3.</span> <span class="toc-text">开发阶段</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CSS-%E5%B8%83%E5%B1%80-%E9%80%82%E9%85%8D-%E5%85%BC%E5%AE%B9"><span class="toc-number">3.1.</span> <span class="toc-text">CSS 布局&#x2F;适配&#x2F;兼容</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%81%E5%BC%8F%E6%8E%92%E7%89%88%E7%9A%84%E5%AD%97%E5%8F%B7%E9%80%82%E9%85%8D"><span class="toc-number">3.1.1.</span> <span class="toc-text">流式排版的字号适配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iPhoneX-%E7%9A%84%E9%80%82%E9%85%8D"><span class="toc-number">3.1.2.</span> <span class="toc-text">iPhoneX 的适配</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A1%B6%E9%83%A8%E9%80%9A%E6%A0%8F"><span class="toc-number">3.1.2.1.</span> <span class="toc-text">顶部通栏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BA%95%E9%83%A8%E8%99%9A%E6%8B%9F%E6%8C%87%E7%A4%BA%E6%9D%A1"><span class="toc-number">3.1.2.2.</span> <span class="toc-text">底部虚拟指示条</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E5%AE%89%E5%85%A8%E5%8C%BA%E5%9F%9F"><span class="toc-number">3.1.2.3.</span> <span class="toc-text">设备安全区域</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#iPhonX-%E9%80%82%E9%85%8D%E6%AD%A5%E9%AA%A4"><span class="toc-number">3.1.2.4.</span> <span class="toc-text">iPhonX 适配步骤</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A1%86%E6%9E%B6%E5%8F%8A%E5%85%B6%E4%BB%96%E9%97%AE%E9%A2%98"><span class="toc-number">3.2.</span> <span class="toc-text">框架及其他问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#v-for-%E7%9A%84-key"><span class="toc-number">3.2.1.</span> <span class="toc-text">v-for 的 key</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iOS-%E7%9A%84%E5%81%B6%E7%8E%B0%E7%99%BD%E5%B1%8F"><span class="toc-number">3.2.2.</span> <span class="toc-text">iOS 的偶现白屏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Vue-%E7%9A%84%E5%8A%A8%E6%80%81%E7%BB%84%E4%BB%B6"><span class="toc-number">3.2.3.</span> <span class="toc-text">Vue 的动态组件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Vue-%E7%9A%84%E5%8D%95%E5%90%91%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="toc-number">3.2.3.1.</span> <span class="toc-text">Vue 的单向数据流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#v-for-%E5%92%8C-v-if"><span class="toc-number">3.2.3.2.</span> <span class="toc-text">v-for 和 v-if</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vue-%E7%9A%84-transition-%E7%BB%84%E4%BB%B6"><span class="toc-number">3.2.3.3.</span> <span class="toc-text">vue 的 transition 组件</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">3.3.</span> <span class="toc-text">性能优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#FPS"><span class="toc-number">3.3.1.</span> <span class="toc-text">FPS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A6%96%E5%B1%8F%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4"><span class="toc-number">3.3.2.</span> <span class="toc-text">首屏加载时间</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E8%BF%87%E5%A4%A7-JSON-%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%84%E7%90%86"><span class="toc-number">3.3.2.1.</span> <span class="toc-text">1. 过大 JSON 对象的处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E8%BF%94%E5%9B%9E%E9%94%9A%E7%82%B9%E4%BD%8D%E7%BD%AE%E7%9A%84%E5%88%86%E9%A1%B5%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD"><span class="toc-number">3.3.2.2.</span> <span class="toc-text">2. 返回锚点位置的分页数据加载</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9C%80%E6%B1%82%E5%8F%8A%E4%BD%93%E9%AA%8C%E7%9A%84%E6%80%9D%E8%80%83"><span class="toc-number">3.4.</span> <span class="toc-text">需求及体验的思考</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">3.4.1.</span> <span class="toc-text">问题及解决方案</span></a></li></ol></li></ol></li></ol>
+        </div>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        618会场开发总结
+    </h1>
+    
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">April Ji</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-06-23T08:39:21.000Z" class="dt-published" itemprop="datePublished">2019-06-23</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="背景与会场效果"><a href="#背景与会场效果" class="headerlink" title="背景与会场效果"></a>背景与会场效果</h1><div style="overflow: hidden; margin: 1rem 0;">
+  <div style="float: left; width: 300px; margin-right: 2rem;">
+    <video controls playsinline preload="metadata" poster="/img/201806170/video-poster.png" style="width:100%;height:auto;display:block;">
+      <source src="/videos/618/8c1ce0acd545dd3fc512e8d0fbe39803.mp4" type="video/mp4">
+      你的浏览器不支持内嵌视频。你可以 <a href="/videos/618/8c1ce0acd545dd3fc512e8d0fbe39803.mp4">下载视频</a> 观看。
+    </video>
+  </div>
+
+  <div style="margin: 0 0 140px 0; overflow: visible; word-wrap: break-word;">
+该会场是2019年京东618购物节期间首个推出的主会场页面。作为高流量电商场景的典型代表，该页面整合了多项前端技术实践：
+<p>
+    - **组件化架构**：将复杂页面拆分为可复用的组件单元，支持灵活的楼层配置和动态渲染</br></br>
+    - **主题切换机制**：支持 banner 图、背景图、色调的实时更换，为618期间每日主题更新提供技术支撑</br></br>
+    - **性能优化**：针对高并发场景，实施懒加载、缓存策略、代码分割等优化措施，确保海量用户体验流畅</br></br>
+    - **配置化运营**：在整个 618 期间，通过集中化配置管理，支持秒杀专场、优惠券投放、商品坑位等营销</br><span style="margin-left:132px;">功能的快速调整、通过开关实现每日定时更新，包括：</span></br>
+        <span style="margin-left:132px;">主题配置（banner 图、背景图、色调搭配）</span></br>
+        <span style="margin-left:132px;">资源位配置（商品坑位、推荐位、活动专区）</span></br>
+        <span style="margin-left:132px;">营销配置（秒杀专场、优惠券投放、满减活动）</span></br>
+        <span style="margin-left:132px;">楼层配置（模块排序、展示逻辑）</span></br>
+</p>
+<p style="margin-top:60px;">
+  <span style="margin-left:10px;">**技术实现包括：**</span>
+
+<p><span style="margin-left:10px;">- 动态组件渲染（楼层灵活配置）</span><br><span style="margin-left:10px;">- 主题切换（实时换肤）</span><br><span style="margin-left:10px;">- 缓存策略与懒加载（性能保障）</span><br><span style="margin-left:10px;">- 配置中心与定时任务（运营支撑）</span></p>
+</p>
+  </div>
+
+<h1 id="设计阶段"><a href="#设计阶段" class="headerlink" title="设计阶段"></a>设计阶段</h1><ul>
+<li><strong>提前控制风险</strong></li>
+</ul>
+<p>电商会场开发通常涉及抢券、秒杀等高风险活动，一旦代码逻辑出现问题，将引发严重后果。因此，前期代码设计必须充分考虑风险控制层面。在制定开发计划时，应为奖券功能预留充足时间进行自测和代码审查。</p>
+<p>需要仔细分析程序每个逻辑分支的可能结果。即使在正常情况下程序运行无误，也要考虑运营人员或其他配置人员出现操作失误的情况，确保有相应的控制开关、数量限制等安全措施。对于类似的异常场景，都要按照代码逻辑进行全面梳理。风险控制必须在设计阶段就充分考虑，否则线上出现问题将造成重大损失。</p>
+<ul>
+<li><strong>上游发现并解决问题，设计时间大于编程/测试时间</strong></li>
+</ul>
+<p>通常，软件设计中正确的时间安排是设计时间&gt; 开发时间，软件设计时间甚至要占到 80%。 但在互联网行业，往往需求变更非常频繁，版本迭代很快，尤其在做业务需求时， 前面的要求总不能做到，因为现实情况中经常碰到紧急且开发周期短的需求，还要考虑到开发过程中存在跨组沟通合作，依赖资源更改等不可控的情况，很多时候就着急忙慌的开发了。</p>
+<p>不过事实证明，提前进行上游控制的开发质量远高于后验补救。质量差的程序即便上线没有出问题，也可能在开发后期发现大比例代码需要返工，那就会延期了。</p>
+<h1 id="开发阶段"><a href="#开发阶段" class="headerlink" title="开发阶段"></a>开发阶段</h1><h2 id="CSS-布局-适配-兼容"><a href="#CSS-布局-适配-兼容" class="headerlink" title="CSS 布局/适配/兼容"></a>CSS 布局/适配/兼容</h2><h3 id="流式排版的字号适配"><a href="#流式排版的字号适配" class="headerlink" title="流式排版的字号适配"></a>流式排版的字号适配</h3><p>当前市场存在多种屏幕尺寸和分辨率的设备，这要求我们在开发时必须考虑全面的机型适配。以本次 618 会场设计为例，页面上方主 banner 区域需要添加按钮，这要求区域能保持图片的宽高比不变，同时按钮的位置和大小需随屏幕尺寸变化而调整。</p>
+<p>区域适配相对容易实现，将其设置为自适应布局即可。但字号设置真的是很棘手的事情。简单地将 font-size 设置为 rem 单位，虽然在主流机型上表现正常，但在其他设备上可能严重影响用户体验。<br>比如下方模拟了从 iPhone5 到 iPad 屏幕大小变化的效果：</p>
+<iframe height="452" style="width: 100%;" scrolling="no" title="vqjPPy" src="//codepen.io/April666/embed/vqjPPy/?height=452&theme-id=dark&default-tab=css,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/April666/pen/vqjPPy/'>vqjPPy</a> by tuzilingdang
+  (<a href='https://codepen.io/April666'>@April666</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+
+<p>要实现字体适配不同的屏幕，媒体查询也可以做到，但设备尺寸种类过多，编写起来较为繁琐，且拖动屏幕改变视窗大小时会出现跳跃现象。虽然对移动端开发而言跳跃并不是主要问题，但我们更倾向于选择简洁优雅的代码方案。</p>
+<p>现在流式排版对 font-size 设置已经有一些方案，各有利弊，目前个人觉得比较好的一种是： <strong>CSS 锁定流式排版</strong></p>
+<p>CSS 锁定流式排版的原理：</p>
+<p><img src="https://typekit.files.wordpress.com/2016/08/lock-basic.png" alt=""></p>
+<p><img src="https://typekit.files.wordpress.com/2016/08/lock-rephrased.png?w=800&h=137" alt=""></p>
+<p>我们可以定义最大最小字体，最大最小屏幕宽度四个变量， font-size 的计算方法如下：</p>
+<p><code>font-size: calc( #&#123;$min_font&#125;rem + (#&#123;$max_font&#125; - #&#123;$min_font&#125;) * ( (100vw - #&#123;$min_width&#125;px) / ( #&#123;$max_width&#125; - #&#123;$min_width&#125;) ));</code></p>
+<p>calc 函数真的是个好东西，本来要各种仔细计算的用 calc 就搞定了。</p>
+<p>用上述方案对页面做全局配置，效果可见下方 DEMO：</p>
+ <iframe height="369" style="width: 100%;" scrolling="no" title="CSS锁定流式排版" src="//codepen.io/April666/embed/vqjPPy/?height=369&theme-id=dark&default-tab=css,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/April666/pen/vqjPPy/'>CSS锁定流式排版</a> by tuzilingdang
+  (<a href='https://codepen.io/April666'>@April666</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+
+<p>整体 font-size 还是可以沿用之前的方法，html 整体加上：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">html</span> &#123;</span><br><span class="line">  <span class="attribute">font-size</span>: <span class="number">100%</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后所有的字体 font-size 可以用 rem 为单位， 1rem 为 16px, 在浏览器拖动页面，全局的字体都可以适配了，并且不会出现大小跳跃，看起来效果比较完美。</p>
+<h3 id="iPhoneX-的适配"><a href="#iPhoneX-的适配" class="headerlink" title="iPhoneX 的适配"></a>iPhoneX 的适配</h3><p>交付测试前需注意兼容性问题自测，iphoneX 不用说默认就要加上，这里有些经验记录一下：</p>
+<ul>
+<li>查询主流设备各项参数的网站： <a href="">https://vizdevices.yesviz.com/viewport.php</a></li>
+</ul>
+<h4 id="顶部通栏"><a href="#顶部通栏" class="headerlink" title="顶部通栏"></a>顶部通栏</h4><p>普通 iPhone 有  128px  的工具栏区域，而 iPhone X 有  176px  的工具栏区域，<br>Android 有  136px  的工具栏区域。</p>
+<p><strong>设计通顶效果页面时，顶部最少预留  136px  的纯色或者无主要内容区域</strong></p>
+<h4 id="底部虚拟指示条"><a href="#底部虚拟指示条" class="headerlink" title="底部虚拟指示条"></a>底部虚拟指示条</h4><p>吸底 Bar 实际一样是始终悬浮固定在屏幕底部，需要留足空间</p>
+<h4 id="设备安全区域"><a href="#设备安全区域" class="headerlink" title="设备安全区域"></a>设备安全区域</h4><blockquote>
+<p>设备安全区域是 iOS11 为屏幕适配引入的概念，指屏幕内适合放置控件的安全区域</p>
+</blockquote>
+<p><img src="https://www.w3cplus.com/sites/default/files/blogs/2018/1806/mobile-design-adapter-36.png" alt=""></p>
+<blockquote>
+<p>注意 iPhone X 等刘海机的适配，iOS 11 中的 WebKit 包含了新 CSS 函数 constant()和四个 safe-area-inset-left, safe-area-inset-right, safe-area-inset-top 和 safe-area-inset-bottom 常量。</p>
+</blockquote>
+<h4 id="iPhonX-适配步骤"><a href="#iPhonX-适配步骤" class="headerlink" title="iPhonX 适配步骤"></a>iPhonX 适配步骤</h4><ul>
+<li><strong>步骤 1</strong></li>
+</ul>
+<p>HTML 添加</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">&quot;viewport&quot;</span> <span class="attr">content</span>=<span class="string">&quot;width=device-width, viewport-fit=cover&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>步骤 2</strong><br>添加 constant()函数：</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">body</span> &#123;</span><br><span class="line">  <span class="attribute">padding-top</span>: <span class="built_in">constant</span>(safe-area-inset-top);</span><br><span class="line">  <span class="attribute">padding-bottom</span>: <span class="built_in">constant</span>(safe-area-inset-bottom);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>横竖屏操作时比较难设置合理的 padding 值，可以使用 max 和 min 函数来实现，例如：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.test</span> &#123;</span><br><span class="line">  <span class="attribute">padding-left</span>: <span class="built_in">max</span>(<span class="number">15px</span>, <span class="built_in">constant</span>(safe-area-inset-left));</span><br><span class="line">  <span class="attribute">padding-right</span>: <span class="built_in">max</span>(<span class="number">15px</span>, <span class="built_in">constant</span>(safe-area-inset-right));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>步骤 3</strong></li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@media</span> <span class="keyword">only</span> screen <span class="keyword">and</span> (<span class="attribute">device-width</span>: <span class="number">375px</span>) <span class="keyword">and</span> (<span class="attribute">device-height</span>: <span class="number">812px</span>) <span class="keyword">and</span> (<span class="attribute">-webkit-device-pixel-ratio</span>: <span class="number">3</span>) &#123;</span><br><span class="line">  // 样式</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">:root&#123;</span><br><span class="line">	--safe-area-inset-top: 44px;</span><br><span class="line">	--safe-area-inset-bottom: 34px;</span><br><span class="line">	--safe-area-inset-left: 0px;</span><br><span class="line">	--safe-area-inset-right: 0px;</span><br><span class="line">	--origin-safe-area-inset-top: 0;</span><br><span class="line">	--origin-safe-area-inset-bottom: 0; &#125;</span><br><span class="line">	@supports (width: constant(safe-area-inset-top))&#123;</span><br><span class="line">		:root&#123;</span><br><span class="line">			--origin-safe-area-inset-top: constant(safe-area-inset-top);</span><br><span class="line">			--origin-safe-area-inset-bottom: constant(safe-area-inset-bottom);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#header-bar&#123;</span><br><span class="line">	padding-top: var(--safe-area-inset-top);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#bottom-tab&#123;</span><br><span class="line">	padding-bottom: var(--safe-area-inset-bottom);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="框架及其他问题"><a href="#框架及其他问题" class="headerlink" title="框架及其他问题"></a>框架及其他问题</h2><h3 id="v-for-的-key"><a href="#v-for-的-key" class="headerlink" title="v-for 的 key"></a>v-for 的 key</h3><p>v-for 一般情况都要记得加上 key，这并不是绝对的，有些情况下不加 key 没什么影响，但有些情况不加 key 不仅效率有影响，甚至会出现 bug。先来下下面的两个没有加 key 的 🌰 栗子：</p>
+<blockquote>
+<p>🌰1:</p>
+</blockquote>
+<iframe height="664" style="width: 100%;" scrolling="no" title="vue-for添加key的作用" src="//codepen.io/April666/embed/WqXrER/?height=265&theme-id=dark&default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/April666/pen/WqXrER/'>vue-for添加key的作用</a> by tuzilingdang
+  (<a href='https://codepen.io/April666'>@April666</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+
+<p>运行代码上述，发现输入框中输入了数字之后，点击打乱顺序按钮，商品列表的位置被打乱了，但是 input 输入框的值居然没有跟着变。 加上 v-model 之后是正常的，运行结果如下。</p>
+<iframe height="664" style="width: 100%;" scrolling="no" title="vue-for添加key的作用" src="//codepen.io/April666/embed/WqXrER/?height=664&theme-id=dark&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/April666/pen/WqXrER/'>vue-for添加key的作用</a> by tuzilingdang
+  (<a href='https://codepen.io/April666'>@April666</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+
+<blockquote>
+<p>🌰2:</p>
+</blockquote>
+<p>上面的 html 代码中加上 Vue 的 transition 动画效果，发现商品列表消失了</p>
+<iframe height="259" style="width: 100%;" scrolling="no" title="vue-for添加key的作用" src="//codepen.io/April666/embed/WqXrER/?height=259&theme-id=dark&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/April666/pen/WqXrER/'>vue-for添加key的作用</a> by tuzilingdang
+  (<a href='https://codepen.io/April666'>@April666</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+
+<p>加上 key 之后则正常显示，也可以看到动画效果：</p>
+<iframe height="624" style="width: 100%;" scrolling="no" title="vue-for添加key的作用" src="//codepen.io/April666/embed/WqXrER/?height=624&theme-id=dark&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/April666/pen/WqXrER/'>vue-for添加key的作用</a> by tuzilingdang
+  (<a href='https://codepen.io/April666'>@April666</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+
+<p><strong>文档的解释</strong> ：<br>Vue 使用 v-for 渲染的元素列表时，默认使用“就地更新”的策略。如果数据项的顺序被改变，Vue 将不会移动 DOM 元素来匹配数据项的顺序，而是就地更新每个元素，并且确保它们在每个索引位置正确渲染。key 属性可以给 Vue 一个提示，这样现有的元素可以高效被重用和排序。<br><strong>深入分析</strong>：<br>Vue 的 Diff 算法中，新旧 Vnode 进行对比，二者为 sameNode 的情况下会进行 pathNode，而判断 sameNode 的方法中用到了 key：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">sameVnode</span>(<span class="params">a, b</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    a.<span class="property">key</span> === b.<span class="property">key</span> &amp;&amp;</span><br><span class="line">    a.<span class="property">tag</span> === b.<span class="property">tag</span> &amp;&amp;</span><br><span class="line">    a.<span class="property">isComment</span> === b.<span class="property">isComment</span> &amp;&amp;</span><br><span class="line">    <span class="title function_">isDef</span>(a.<span class="property">data</span>) === <span class="title function_">isDef</span>(b.<span class="property">data</span>) &amp;&amp;</span><br><span class="line">    <span class="title function_">sameInputType</span>(a, b)</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同时未定义的情况二者的 key 均为 undefined，判断为 sameNode 的情况会进行 pathNode，新老节点均有 children 子节点的情况会调用 updateChildren 方法，具体可参见源码，重点说一下用到 key 的过程，如下图：<br><img src="https://camo.githubusercontent.com/0d7072c5a5b674d757c35b8f00b7562d6bba292b/68747470733a2f2f692e6c6f6c692e6e65742f323031372f30382f32392f353961346437353532643239392e706e67" alt=""><br>updateChildren 方法中头尾交叉对比互不相同的情况，调用 createKeyToOldIdx 方法创建一个 oldVnode 的 map，用 newStartVnode（虚拟 Dom 同层头部节点）的 key 对比创建的 map 的 key，找到相同 key 的 sameNode。</p>
+<p>如果 newStartVnode 没有 key，那需要遍历整个 map 寻找 sameNode，有 key 的情况就可以直接通过 map 找到对应的 sameNode 进行 patch 了。<br>用到 key 也并不是一定必要的，某些特别简单的列表渲染就地渲染的效率可能更高，不过大部分情况还是尽可能在 v-for 的情况下使用 key。</p>
+<h3 id="iOS-的偶现白屏"><a href="#iOS-的偶现白屏" class="headerlink" title="iOS 的偶现白屏"></a>iOS 的偶现白屏</h3><p>iOS 来回跳转多次，偶现页面白屏，触屏又出现的问题，但 dom 元素和绑定事件存在，恢复问题代码，但出现频率降低，难以复现找到真实原因。推测与 iOS 的 webview 的底层渲染有关，很多人反馈类似问题，可能因为页面滚动后没有正常的调用 WKWebView 的 _updateVisibleContentRects 方法刷新需要渲染的内容导致</p>
+<p><strong>解决方法</strong></p>
+<ul>
+<li>强制设置高度撑开某些情况下可能解决问题</li>
+<li>如果上述方法没有作用，需要关注内存使用，规范使用框架</li>
+</ul>
+<h3 id="Vue-的动态组件"><a href="#Vue-的动态组件" class="headerlink" title="Vue 的动态组件"></a>Vue 的动态组件</h3><p>开发中碰到配置很多楼层，但这些楼层有不同的样式和逻辑的需求，需要建立不同的楼层组件满足业务需求。 一个组件可对应一个或多个楼层，并且所有楼层需要灵活安放位置，可由运营排序。<br><strong>解决方法</strong> ：</p>
+<p>Vue 的动态组件非常好用，我们可以给每个楼层组件一个不同的 key 值，先把 list 做排序，然后利用 v-bind:is 属性绑定，可以在代码量比较少的情况下完成上述功能，如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;tabfloor&quot;</span> <span class="attr">v-for</span>=<span class="string">&quot;(tabFloor, index) in tabList&quot;</span> <span class="attr">:key</span>=<span class="string">&quot;index&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">component</span> <span class="attr">:is</span>=<span class="string">&quot;tabFloor.key&quot;</span> <span class="attr">:dataConfig</span>=<span class="string">&quot;tabFloor&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>对比繁琐的写法(这里有商品楼层有十几种组件)：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;tabfloor&quot;</span> <span class="attr">v-for</span>=<span class="string">&quot;(tabFloor, index) in tabList&quot;</span> <span class="attr">:key</span>=<span class="string">&quot;index&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Benefit</span> <span class="attr">v-if</span>=<span class="string">&quot;tabFloor.key == &#x27;benefit&#x27;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">Benefit</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">secPin</span> <span class="attr">v-if</span>=<span class="string">&quot;tabFloor.key == &#x27;secpin&#x27;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">secPin</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Choice</span> <span class="attr">v-if</span>=<span class="string">&quot;tabFloor.key == &#x27;choice&#x27;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">Choice</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Cheap</span> <span class="attr">v-if</span>=<span class="string">&quot;tabFloor.key == &#x27;cheap&#x27;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">Cheap</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Optimize</span> <span class="attr">v-if</span>=<span class="string">&quot;tabFloor.key == &#x27;optimize&#x27;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">Optimize</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Benefit2</span> <span class="attr">v-if</span>=<span class="string">&quot;tabFloor.key == &#x27;benefit2&#x27;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">Benefit2</span>&gt;</span></span><br><span class="line">  ···</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Vue-的单向数据流"><a href="#Vue-的单向数据流" class="headerlink" title="Vue 的单向数据流"></a>Vue 的单向数据流</h4><p>注意 vue 的单向数据流，规范写法。 很多提示 vue warn 的情况是由于没有遵循合理的规范，父组件注入子组件的数据最好不要直接修改，这里可以在子组件中重新设置 data</p>
+<h4 id="v-for-和-v-if"><a href="#v-for-和-v-if" class="headerlink" title="v-for 和 v-if"></a>v-for 和 v-if</h4><p>v-for 和 v-if 尽量不要一起使用</p>
+<h4 id="vue-的-transition-组件"><a href="#vue-的-transition-组件" class="headerlink" title="vue 的 transition 组件"></a>vue 的 transition 组件</h4><p>跑马灯的效果可以使用 vue 的 transition 组件<br>文档：<a href="">https://cn.vuejs.org/v2/api/#transition</a></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">transition</span> <span class="attr">class</span>=<span class="string">&quot;marquee-list-container&quot;</span> <span class="attr">name</span>=<span class="string">&quot;marquee&quot;</span> <span class="attr">mode</span>=<span class="string">&quot;out-in&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;transition&quot;</span> <span class="attr">:key</span>=<span class="string">&quot;item.id&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">class</span>=<span class="string">&quot;marquee_img&quot;</span> <span class="attr">v-if</span>=<span class="string">&quot;item.img&quot;</span> <span class="attr">:src</span>=<span class="string">&quot;item.img&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">&quot;marquee_text&quot;</span>&gt;</span>&#123;&#123;item.text&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;play&quot;</span> <span class="attr">v-if</span>=<span class="string">&quot;item.link&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;arrow&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">transition</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>css 部分：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.marquee-enter-active</span>,</span><br><span class="line"><span class="selector-class">.marquee-leave-active</span> &#123;</span><br><span class="line">  <span class="attribute">transition</span>: all <span class="number">1s</span> ease-out;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.marquee-leave-to</span> &#123;</span><br><span class="line">  <span class="attribute">transform</span>: <span class="built_in">translateY</span>(-<span class="number">1.25rem</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.marquee-enter</span> &#123;</span><br><span class="line">  <span class="attribute">transform</span>: <span class="built_in">translateY</span>(<span class="number">1.25rem</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h2><h3 id="FPS"><a href="#FPS" class="headerlink" title="FPS"></a>FPS</h3><p>FPS(Frame Per Second)刷新率是最能反应页面性能的指标，代表每秒传输的帧数。衡量页面的卡顿程度可以通过下表看到：</p>
+<table>
+<thead>
+<tr>
+<th>FPS</th>
+<th>卡顿程度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&gt; 60</td>
+<td>非常流畅</td>
+</tr>
+<tr>
+<td>30 ～ 60</td>
+<td>无卡顿</td>
+</tr>
+<tr>
+<td>12 ～ 30</td>
+<td>卡顿</td>
+</tr>
+<tr>
+<td>&lt; 12</td>
+<td>非常卡顿</td>
+</tr>
+</tbody></table>
+<p>618 会场的 FPS 测试，滚动时 fps 在 50 ～ 60 之间，比较流畅。</p>
+<p><img src="../../../../img/201806230/fps.gif" alt=""></p>
+<p>Load 过程中，可以通过 performance 观察 FPS 情况，1S 内页面需要做许多工作，还可能有耗时的 DOM 操作，会丢失很多帧。所以下图中可以看到，前 1s 的 FPS 有一段红色的线，出现红色的线代表 FPS 值较低，页面性能也比较低。 之后是一条绿色的长线是正常的了。 也可以看到，页面还有一部分优化空间，红色的线应该降低到 1S 内。</p>
+<p><img src="../../../../img/201806230/fps2.jpg" alt=""></p>
+<p>可以从以下角度去优化这部分性能：<br><img src="../../../../img/201806230/optimize.jpg" alt=""></p>
+<h3 id="首屏加载时间"><a href="#首屏加载时间" class="headerlink" title="首屏加载时间"></a>首屏加载时间</h3><p>整体页面发现首屏加载比较慢，需要优化。</p>
+<h4 id="1-过大-JSON-对象的处理"><a href="#1-过大-JSON-对象的处理" class="headerlink" title="1. 过大 JSON 对象的处理"></a>1. 过大 JSON 对象的处理</h4><p>使用 Chrome 的 performance 功能，CPU 调整到 4x 倍速，加载略慢的情况可以看到详细的首屏加载信息。</p>
+<p><img src="../../../../img/201806230/1.jpeg" alt=""></p>
+<p>对比发现，script 的时间占比太多，页面解析 js 的时间造成了整体渲染阻塞。查了下原因，是由于运营配置的静态数据过大造成。所以这里替换了首次请求页面片，使用接口请求去拿数据，script 的时间明显减少：</p>
+<p><img src="../../../../img/201806230/2.jpeg" alt=""></p>
+<p><img src="../../../../img/201806230/3.jpeg" alt=""></p>
+<p>问题虽然解决了，但这也引发了我们的思考。为了减少首屏的请求数量，我们选择将后续代码所需的 JSON 配置文件直接生成到 HTML 的 script 标签中，但在本次开发中，这种方式反而导致性能降低。经过查阅资料，发现原因有两个：查找了一些资料，发现原因有两个：</p>
+<ul>
+<li><p>解析 JSON.parse 方法相比 解析 JavaScript 对象字面量会快得多</p>
+</li>
+<li><p>将普通对象字面量用于大量数据时可能被解析两次：</p>
+<p>字面量预解析时是第一次。<br>字面量被懒解析时是第二次。</p>
+</li>
+</ul>
+<p>对于第一点：我们使用字面量对象来表示大型的 JSON 数据并放置在 script 标签中，解析速度非常慢。比如下面两种写法，使用 JSON.parse 后性能会明显提升：</p>
+<p><code>const data = &#123; foo: 42, bar: 1337 &#125;; // 🐌</code></p>
+<p><code>const data = JSON.parse(&#39;&#123;&quot;foo&quot;:42,&quot;bar&quot;:1337&#125;&#39;); // 🚀</code></p>
+<p><img src="https://v8.js.cn/_img/cost-of-javascript-2019/json.svg" alt=""></p>
+<p>在大部分浏览器的 js 引擎中，使用 json.parse 的速度要明显优于直接使用对象字面量。</p>
+<p>对于第二点： 我的理解是，为防止页面启动时分配大量内存导致内存飙升，解析对象时会先解析对象层级浅的一层和被会被用到的一层，其他暂不使用的属性，再进行第二次懒解析。 原理应该类似于 PIFE，可详见这篇文章：</p>
+<p><a href="https://juejin.im/post/5cf33bd751882579e53f0130">超快速的分析器（二）：惰性解析</a></p>
+<p>综上，对于大于 10KB 的 JSON 对象，最好避免在页面冷启动时进行解析。</p>
+<h4 id="2-返回锚点位置的分页数据加载"><a href="#2-返回锚点位置的分页数据加载" class="headerlink" title="2. 返回锚点位置的分页数据加载"></a>2. 返回锚点位置的分页数据加载</h4><p>用户点击商品跳转后，再返回页面，出于对体验优化的考虑，一般比较长的特别是很多分页的页面，我们会加上返回锚点定位的功能。</p>
+<p>但如果用户已经浏览了很多页，返回页面时如果要重新加载每页的数据，那就太慢啦。 所以这种情况，可以在请求接口时加上缓存功能，设置大概 5min 的缓存时间，如果在此时间内可以直接去取缓存数据。</p>
+<h2 id="需求及体验的思考"><a href="#需求及体验的思考" class="headerlink" title="需求及体验的思考"></a>需求及体验的思考</h2><h3 id="问题及解决方案"><a href="#问题及解决方案" class="headerlink" title="问题及解决方案"></a>问题及解决方案</h3><ol>
+<li><p>开发中思维局限于技术实现，对用户体验没有多关注，造成因体验问题不好上线后返工修改。本次开发中也出现了只关注开发完成情况，点击领券后没有再次查询状态打标已领取的问题，这样会导致用户多一次操作，体验不够好。</p>
+<p><strong>解决方法</strong> ：</p>
+<ul>
+<li>开发中每一个环节多思考一步，从用户角度看还缺少什么逻辑</li>
+<li>多体验其他页面，总结普遍的体验要求</li>
+<li>学会提问，主动了解需求背景，否则可能出现两种情况：<br>（1）产品文档不列出细节的情况，认为冰山一角的需求是开发的全部工作量（本次碰到）<br>（2）实际用户只想要个馒头，却按照需求开发了满汉全席</li>
+</ul>
+</li>
+<li><p>产品设计需要技术敏感度，否则类似组件也难以复用，与可复用方案相比，达到同样的产品体验效果，开发成本增大很多</p>
+<p><strong>解决方法</strong> ：</p>
+<ul>
+<li>开发在需求沟通中也需提供技术上的意见</li>
+<li>减少从用户角度看没有实际区别但表现形式不同导致开发量增大的楼层</li>
+</ul>
+</li>
+<li><p>开发过程中需求添加、以及频繁性变动比较严重，有限开发时间内导致交付质量差</p>
+<p><strong>解决方法</strong> ：</p>
+<ul>
+<li>重要需求的必要变更开发往往不能拒绝，这里开发很弱势暂时无解</li>
+<li>务必提前确定需求到底想要什么，涉及到要用的资源务必提前定好</li>
+</ul>
+</li>
+<li><p>规范的 PRD 文档，交互稿和设计稿的细节程度与沟通成本大小成反比关系，不规范缺少细节的 PRD 文档会导致沟通成本极大。 PRD 生成了图片交付，需求变更存在口头沟通没有更新到文档。 需求变更点与开始的 prd 分开两张图片，查找和沟通成本极高。</p>
+</li>
+</ol>
+<p><strong>解决方法</strong> ：</p>
+<ul>
+<li>规范 PRD 文档， 文档需支持可编辑</li>
+<li>需求细节应该描述清楚</li>
+<li>项目需要有一个产品经理</li>
+<li>一个比较好的标准化产品需求文档系列推荐： <a href="">http://www.woshipm.com/pmd/964608.html</a></li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="https://github.com/apriljii">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%83%8C%E6%99%AF%E4%B8%8E%E4%BC%9A%E5%9C%BA%E6%95%88%E6%9E%9C"><span class="toc-number">1.</span> <span class="toc-text">背景与会场效果</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E9%98%B6%E6%AE%B5"><span class="toc-number">2.</span> <span class="toc-text">设计阶段</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BC%80%E5%8F%91%E9%98%B6%E6%AE%B5"><span class="toc-number">3.</span> <span class="toc-text">开发阶段</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CSS-%E5%B8%83%E5%B1%80-%E9%80%82%E9%85%8D-%E5%85%BC%E5%AE%B9"><span class="toc-number">3.1.</span> <span class="toc-text">CSS 布局&#x2F;适配&#x2F;兼容</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%81%E5%BC%8F%E6%8E%92%E7%89%88%E7%9A%84%E5%AD%97%E5%8F%B7%E9%80%82%E9%85%8D"><span class="toc-number">3.1.1.</span> <span class="toc-text">流式排版的字号适配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iPhoneX-%E7%9A%84%E9%80%82%E9%85%8D"><span class="toc-number">3.1.2.</span> <span class="toc-text">iPhoneX 的适配</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A1%B6%E9%83%A8%E9%80%9A%E6%A0%8F"><span class="toc-number">3.1.2.1.</span> <span class="toc-text">顶部通栏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BA%95%E9%83%A8%E8%99%9A%E6%8B%9F%E6%8C%87%E7%A4%BA%E6%9D%A1"><span class="toc-number">3.1.2.2.</span> <span class="toc-text">底部虚拟指示条</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E5%AE%89%E5%85%A8%E5%8C%BA%E5%9F%9F"><span class="toc-number">3.1.2.3.</span> <span class="toc-text">设备安全区域</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#iPhonX-%E9%80%82%E9%85%8D%E6%AD%A5%E9%AA%A4"><span class="toc-number">3.1.2.4.</span> <span class="toc-text">iPhonX 适配步骤</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A1%86%E6%9E%B6%E5%8F%8A%E5%85%B6%E4%BB%96%E9%97%AE%E9%A2%98"><span class="toc-number">3.2.</span> <span class="toc-text">框架及其他问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#v-for-%E7%9A%84-key"><span class="toc-number">3.2.1.</span> <span class="toc-text">v-for 的 key</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iOS-%E7%9A%84%E5%81%B6%E7%8E%B0%E7%99%BD%E5%B1%8F"><span class="toc-number">3.2.2.</span> <span class="toc-text">iOS 的偶现白屏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Vue-%E7%9A%84%E5%8A%A8%E6%80%81%E7%BB%84%E4%BB%B6"><span class="toc-number">3.2.3.</span> <span class="toc-text">Vue 的动态组件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Vue-%E7%9A%84%E5%8D%95%E5%90%91%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="toc-number">3.2.3.1.</span> <span class="toc-text">Vue 的单向数据流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#v-for-%E5%92%8C-v-if"><span class="toc-number">3.2.3.2.</span> <span class="toc-text">v-for 和 v-if</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#vue-%E7%9A%84-transition-%E7%BB%84%E4%BB%B6"><span class="toc-number">3.2.3.3.</span> <span class="toc-text">vue 的 transition 组件</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-number">3.3.</span> <span class="toc-text">性能优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#FPS"><span class="toc-number">3.3.1.</span> <span class="toc-text">FPS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A6%96%E5%B1%8F%E5%8A%A0%E8%BD%BD%E6%97%B6%E9%97%B4"><span class="toc-number">3.3.2.</span> <span class="toc-text">首屏加载时间</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E8%BF%87%E5%A4%A7-JSON-%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%84%E7%90%86"><span class="toc-number">3.3.2.1.</span> <span class="toc-text">1. 过大 JSON 对象的处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E8%BF%94%E5%9B%9E%E9%94%9A%E7%82%B9%E4%BD%8D%E7%BD%AE%E7%9A%84%E5%88%86%E9%A1%B5%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD"><span class="toc-number">3.3.2.2.</span> <span class="toc-text">2. 返回锚点位置的分页数据加载</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9C%80%E6%B1%82%E5%8F%8A%E4%BD%93%E9%AA%8C%E7%9A%84%E6%80%9D%E8%80%83"><span class="toc-number">3.4.</span> <span class="toc-text">需求及体验的思考</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">3.4.1.</span> <span class="toc-text">问题及解决方案</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&text=618会场开发总结"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&title=618会场开发总结"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&is_video=false&description=618会场开发总结"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=618会场开发总结&body=Check out this article: https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&title=618会场开发总结"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&title=618会场开发总结"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&title=618会场开发总结"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&title=618会场开发总结"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&name=618会场开发总结&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/&t=618会场开发总结"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    April Ji
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

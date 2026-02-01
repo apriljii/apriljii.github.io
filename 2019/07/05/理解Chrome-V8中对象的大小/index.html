@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang=ch>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="理解 Chrome&#x2F;V8 中对象的大小原文：Understanding the size of an object in Chrome&#x2F;V8 - Matt Zeunert 在 DevTools 堆快照中查看对象时，有时不清楚为什么对象具有某个特定的（浅层）大小。 对象的大小取决于运行代码的 JavaScript 引擎。在 Chrome 中这是 V8，本文将基于 V8 的实现细节来解释对象的大小。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="理解Chrome&#x2F;V8中对象的大小（译文）">
+<meta property="og:url" content="https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/index.html">
+<meta property="og:site_name" content="April">
+<meta property="og:description" content="理解 Chrome&#x2F;V8 中对象的大小原文：Understanding the size of an object in Chrome&#x2F;V8 - Matt Zeunert 在 DevTools 堆快照中查看对象时，有时不清楚为什么对象具有某个特定的（浅层）大小。 对象的大小取决于运行代码的 JavaScript 引擎。在 Chrome 中这是 V8，本文将基于 V8 的实现细节来解释对象的大小。">
+<meta property="og:locale">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/v8-heap-snapshot.png">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/initial-object.png">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/v8-heap-snapshot.png">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/v8-heap-snapshot-3.png">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/thing-constructor.png">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/thing-constructor-2.png">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/thing-constructor-3.png">
+<meta property="article:published_time" content="2019-07-05T13:31:47.000Z">
+<meta property="article:modified_time" content="2026-01-29T09:55:02.131Z">
+<meta property="article:author" content="April Ji">
+<meta property="article:tag" content="V8">
+<meta property="article:tag" content="JavaScript">
+<meta property="article:tag" content="Chrome">
+<meta property="article:tag" content="内存管理">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://apriljii.github.io/img/20260115/v8-heap-snapshot.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>理解Chrome/V8中对象的大小（译文）</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+	<!-- mermaid -->
+	<script src='https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js'></script>
+	<script>
+		mermaid.initialize({
+			startOnLoad: true,
+			theme: 'dark',
+			securityLevel: 'loose'
+		});
+	</script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2019/11/13/base642binary/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2019/07/05/v8-fast-properties-zh/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&text=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&title=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&is_video=false&description=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=理解Chrome/V8中对象的大小（译文）&body=Check out this article: https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&title=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&title=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&title=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&title=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&name=理解Chrome/V8中对象的大小（译文）&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&t=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc-container">
+        <div id="toc-toggle" class="toc-toggle-btn">
+          <i class="fa-solid fa-list"></i>
+          <span>Table of Contents</span>
+        </div>
+        <div id="toc" style="display: none;">
+          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%90%86%E8%A7%A3-Chrome-V8-%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F"><span class="toc-number">1.</span> <span class="toc-text">理解 Chrome&#x2F;V8 中对象的大小</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E4%BE%8B%E5%AD%90%EF%BC%8C%E4%BB%A5%E5%8F%8A%E5%A4%A9%E7%9C%9F%E7%9A%84%E7%8C%9C%E6%B5%8B"><span class="toc-number">1.1.</span> <span class="toc-text">一个简单的例子，以及天真的猜测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-DevTools-%E5%A0%86%E6%A3%80%E6%9F%A5%E5%99%A8%E6%B5%8B%E9%87%8F%E5%AF%B9%E8%B1%A1%E5%A4%A7%E5%B0%8F"><span class="toc-number">1.2.</span> <span class="toc-text">使用 DevTools 堆检查器测量对象大小</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#V8-%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%E9%BB%98%E8%AE%A4%E5%AF%B9%E8%B1%A1%E5%A4%A7%E5%B0%8F"><span class="toc-number">1.3.</span> <span class="toc-text">V8 如何优化默认对象大小</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%90%E8%97%8F%E7%B1%BB"><span class="toc-number">1.4.</span> <span class="toc-text">隐藏类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%9D%E5%A4%96%E5%B1%9E%E6%80%A7"><span class="toc-number">1.5.</span> <span class="toc-text">额外属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E5%AD%97%E5%85%83%E7%B4%A0"><span class="toc-number">1.6.</span> <span class="toc-text">数字元素</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.7.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%99%E5%A6%82%E4%BD%95%E9%80%82%E7%94%A8%E4%BA%8E%E5%AF%B9%E8%B1%A1%E5%AD%97%E9%9D%A2%E9%87%8F%EF%BC%9F"><span class="toc-number">1.8.</span> <span class="toc-text">这如何适用于对象字面量？</span></a></li></ol></li></ol>
+        </div>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        理解Chrome/V8中对象的大小（译文）
+    </h1>
+    
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">April Ji</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-07-05T13:31:47.000Z" class="dt-published" itemprop="datePublished">2019-07-05</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Chrome/" rel="tag">Chrome</a>, <a class="p-category" href="/tags/JavaScript/" rel="tag">JavaScript</a>, <a class="p-category" href="/tags/V8/" rel="tag">V8</a>, <a class="p-category" href="/tags/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" rel="tag">内存管理</a>, <a class="p-category" href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag">性能优化</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="理解-Chrome-V8-中对象的大小"><a href="#理解-Chrome-V8-中对象的大小" class="headerlink" title="理解 Chrome/V8 中对象的大小"></a>理解 Chrome/V8 中对象的大小</h1><p>原文：<a href="https://www.mattzeunert.com/2017/03/29/v8-object-size.html">Understanding the size of an object in Chrome/V8</a> - Matt Zeunert</p>
+<p>在 DevTools 堆快照中查看对象时，有时不清楚为什么对象具有某个特定的（浅层）大小。</p>
+<p>对象的大小取决于运行代码的 JavaScript 引擎。在 Chrome 中这是 V8，本文将基于 V8 的实现细节来解释对象的大小。</p>
+<p>我还制作了一个视频，其中包含与本文基本相同的内容。但是视频中没有关于对象字面量的部分。</p>
+<div style="text-align:center; margin: 1rem 0;">
+  <img src="/img/20260115/v8-heap-snapshot.png" alt="DevTools 堆快照" style="max-width:100%;height:auto;border:1px solid #e6e6e6;"/>
+</div>
+
+<h2 id="一个简单的例子，以及天真的猜测"><a href="#一个简单的例子，以及天真的猜测" class="headerlink" title="一个简单的例子，以及天真的猜测"></a>一个简单的例子，以及天真的猜测</h2><p>让我们创建一个简单的对象。你认为它在内存中会占用多少空间？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Thing</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">a</span> = <span class="string">&quot;a&quot;</span>;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">b</span> = <span class="string">&quot;b&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable language_">window</span>.<span class="property">oneThing</span> = <span class="keyword">new</span> <span class="title class_">Thing</span>();</span><br></pre></td></tr></table></figure>
+
+<p>V8 至少需要存储对<code>a</code>和<code>b</code>的两个引用。那么，一个引用有多大呢？我们需要指向内存中的一个地址，在 64 位系统上我们使用 64 位来指向内存位置。所以我们需要 64 位或 8 字节来存储一个引用。</p>
+<p>由于我们有两个引用，我们应该期望对象的大小大约是 16 字节。</p>
+<p>为了创建这个对象，V8 还需要分配两个字符串对象。然而，虽然用于存储字符串的内存计入<code>oneThing</code>的保留大小，但它们不包括在浅层大小中。</p>
+<h2 id="使用-DevTools-堆检查器测量对象大小"><a href="#使用-DevTools-堆检查器测量对象大小" class="headerlink" title="使用 DevTools 堆检查器测量对象大小"></a>使用 DevTools 堆检查器测量对象大小</h2><p>为了测量存储对象使用的内存量，我们可以使用 DevTools 配置文件选项卡中的堆检查器工具。（如果你有较新版本的 Chrome，这个选项卡可能称为内存。）</p>
+<p>我们可以使用”类过滤器”字段只显示使用名为<code>Thing</code>的构造函数创建的对象。</p>
+<div style="text-align:center; margin: 1rem 0;">
+  <img src="/img/20260115/initial-object.png" alt="DevTools 堆快照" style="max-width:100%;height:auto;border:1px solid #e6e6e6;"/>
+</div>
+
+<p>简单对象在 Chrome 堆快照中，140 字节</p>
+<p>事实证明，我们的<code>Thing</code>比我们预期的要大 6 倍多，占用了 104 字节。为什么？</p>
+<h2 id="V8-如何优化默认对象大小"><a href="#V8-如何优化默认对象大小" class="headerlink" title="V8 如何优化默认对象大小"></a>V8 如何优化默认对象大小</h2><p>当 V8 创建一个新的对象实例时，它必须决定分配多少内存。然而，这并不容易。虽然在静态编程语言中提前知道对象将有多少属性，但像 JavaScript 这样的动态语言有点棘手。</p>
+<p>因此，V8 在首次为新对象分配内存时相当慷慨。</p>
+<p>但是随着创建更多对象，V8 了解到实际需要多少内存来存储一个<code>Thing</code>。创建 8 个对象后，V8 决定它有足够的信息，并分配更合理的内存量。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建7个更多对象，所以总共有8个</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">7</span>; i++) &#123;</span><br><span class="line">  <span class="variable language_">window</span>[i] = <span class="keyword">new</span> <span class="title class_">Thing</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行此代码将每个<code>Thing</code>的大小缩小到 40 字节。</p>
+<p>Chrome 拥有关于具有该构造函数的对象的信息后，40 字节</p>
+<div style="text-align:center; margin: 1rem 0;">
+  <img src="/img/20260115/v8-heap-snapshot.png" alt="DevTools 堆快照" style="max-width:100%;height:auto;border:1px solid #e6e6e6;"/>
+</div>
+
+<p>我们仍然有 24 字节的差异，但这可以通过存储在每个对象上的三个附加属性来解释。</p>
+<h2 id="隐藏类"><a href="#隐藏类" class="headerlink" title="隐藏类"></a>隐藏类</h2><p>让我们点击其中一个<code>Thing</code>对象旁边的箭头，看看 V8 说它存储在这个对象上的值是什么。</p>
+<p>展开的项目显示一个 Map 属性</p>
+<div style="text-align:center; margin: 1rem 0;">
+  <img src="/img/20260115/v8-heap-snapshot-3.png" alt="DevTools 堆快照" style="max-width:100%;height:auto;border:1px solid #e6e6e6;"/>
+</div>
+
+<p><code>a</code>和<code>b</code>是我们预期的。但是<code>map</code>和<code>__proto__</code>呢？</p>
+<p>由于 JavaScript 是动态语言，可以将任何属性分配给任何对象。所以对象的自然数据结构会是字典，可能实现为哈希表。</p>
+<p>然而，这不是很高效。V8 不只使用一种对象类型，而是使用一个称为隐藏类的概念来为每个对象提供类型。在内部，V8 将隐藏类称为 Maps。</p>
+<p>隐藏类看起来像什么？</p>
+<div style="text-align:center; margin: 1rem 0;">
+  <img src="/img/20260115/thing-constructor.png" alt="DevTools 堆快照" style="max-width:100%;height:auto;border:1px solid #e6e6e6;"/>
+</div>
+隐藏类/map
+
+<p>在这个截图中有几件事你可以看到：</p>
+<ul>
+<li>对象的属性列表存储在<code>descriptors</code>中</li>
+<li>隐藏类的对象 ID（<code>@208315</code>）对于每个<code>Thing</code>实例都是相同的（但这并不总是必须的，只有当<code>Thing</code>对象具有相同的属性并且属性以相同的顺序分配时）</li>
+<li>隐藏类存储对原型的引用，其对象 ID 与<code>__proto__</code>的相同</li>
+</ul>
+<p>鉴于隐藏类已经存储了对原型的引用，那么<code>__proto__</code>的意义何在？我认为不再有意义，它实际上没有存储在对象上。</p>
+<p>所以隐藏类占用了另外 8 字节，而<code>__proto__</code>并没有直接在对象上占用任何空间。</p>
+<h2 id="额外属性"><a href="#额外属性" class="headerlink" title="额外属性"></a>额外属性</h2><p>前面我谈到了 V8 如何学习存储具有某个构造函数的对象需要多少空间。但是如果我稍后向我的<code>Thing</code>对象添加更多属性呢？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">window</span>.<span class="property">oneThing</span>.<span class="property">c</span> = <span class="string">&quot;c&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>V8 没有足够的空间在对象上存储新值。为了避免重新分配对象并为其提供更多空间，V8 对象可以有一个<code>properties</code>属性，其中存储额外值。</p>
+<div style="text-align:center; margin: 1rem 0;">
+  <img src="/img/20260115/thing-constructor-2.png" alt="DevTools 堆快照" style="max-width:100%;height:auto;border:1px solid #e6e6e6;"/>
+</div>
+Thing 有一个名为 properties 的属性
+
+<p>对存储额外值的对象的引用占用了另外 8 字节。只剩下另外 8 字节了！</p>
+<h2 id="数字元素"><a href="#数字元素" class="headerlink" title="数字元素"></a>数字元素</h2><p>最后，V8 对数字属性给予特殊处理，例如用于数组索引的属性。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">window</span>.<span class="property">oneThing</span>[<span class="number">4</span>] = <span class="string">&quot;four&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>像额外属性一样，数字索引处的值存储在一个特殊的<code>elements</code>对象中。</p>
+<div style="text-align:center; margin: 1rem 0;">
+  <img src="/img/20260115/thing-constructor-3.png" alt="DevTools 堆快照" style="max-width:100%;height:auto;border:1px solid #e6e6e6;"/>
+</div>
+Thing 有一个名为 elements 的属性
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们在对象上需要 5 个引用的空间：</p>
+<ul>
+<li>对<code>a</code>字符串的引用</li>
+<li>对<code>b</code>字符串的引用</li>
+<li>对隐藏类的引用</li>
+<li>对额外属性对象的引用空间</li>
+<li>对元素对象的引用空间</li>
+</ul>
+<p>5 个引用每个 8 字节，给我们对象的总大小为 40 字节。</p>
+<h2 id="这如何适用于对象字面量？"><a href="#这如何适用于对象字面量？" class="headerlink" title="这如何适用于对象字面量？"></a>这如何适用于对象字面量？</h2><p>我没有读到任何关于 V8 如何在内部处理对象字面量的信息。然而，我在控制台中到处点点看看。</p>
+<p>似乎每个空对象字面量（<code>&#123;&#125;</code>）将被分配 56 字节。然后你可以向它添加 4 个属性值，直到新的属性引用将被存储在<code>properties</code>值中而不是直接在对象上。</p>
+<p>然而，如果你的初始对象字面量已经有了一些属性，V8 将分配刚好足够的内存来存储这些属性。<code>&#123;a: &quot;a&quot;&#125;</code>的浅层大小将是 32 字节，对于<code>&#123;a: &quot;a&quot;, b: &quot;b&quot;, ..., e: &quot;e&quot;&#125;</code>将是 64 字节。</p>
+<p>在代码的同一位置创建多个对象不会降低对象大小。这意味着运行此代码后，每个对象仍然占用 56 字节，而不是缩小到 32 字节：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">makeObj</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">var</span> obj = &#123;&#125;;</span><br><span class="line">  obj.<span class="property">a</span> = <span class="string">&quot;a&quot;</span>;</span><br><span class="line">  <span class="keyword">return</span> obj;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">  <span class="variable language_">window</span>[<span class="string">&quot;o&quot;</span> + i] = <span class="title function_">makeObj</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果你想进行自己的测试，我建议将你创建的对象包装在另一个具有命名构造函数的对象中，这样你就可以在堆快照中搜索它：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> container = <span class="title function_">new</span> (<span class="keyword">function</span> <span class="title function_">Searchable</span>(<span class="params"></span>) &#123;&#125;)();</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">makeObj</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">var</span> obj = &#123; <span class="attr">a</span>: <span class="string">&quot;a&quot;</span> &#125;;</span><br><span class="line">  <span class="keyword">return</span> obj;</span><br><span class="line">&#125;</span><br><span class="line">container.<span class="property">o</span> = <span class="title function_">makeObj</span>();</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>本文翻译自 Matt Zeunert 的博客文章<a href="https://www.mattzeunert.com/2017/03/29/v8-object-size.html">Understanding the size of an object in Chrome/V8</a>，介绍了 V8 引擎中对象内存分配的内部机制，帮助开发者更好地理解 JavaScript 对象的内存占用情况。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="https://github.com/apriljii">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%90%86%E8%A7%A3-Chrome-V8-%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F"><span class="toc-number">1.</span> <span class="toc-text">理解 Chrome&#x2F;V8 中对象的大小</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E4%BE%8B%E5%AD%90%EF%BC%8C%E4%BB%A5%E5%8F%8A%E5%A4%A9%E7%9C%9F%E7%9A%84%E7%8C%9C%E6%B5%8B"><span class="toc-number">1.1.</span> <span class="toc-text">一个简单的例子，以及天真的猜测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-DevTools-%E5%A0%86%E6%A3%80%E6%9F%A5%E5%99%A8%E6%B5%8B%E9%87%8F%E5%AF%B9%E8%B1%A1%E5%A4%A7%E5%B0%8F"><span class="toc-number">1.2.</span> <span class="toc-text">使用 DevTools 堆检查器测量对象大小</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#V8-%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%E9%BB%98%E8%AE%A4%E5%AF%B9%E8%B1%A1%E5%A4%A7%E5%B0%8F"><span class="toc-number">1.3.</span> <span class="toc-text">V8 如何优化默认对象大小</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%90%E8%97%8F%E7%B1%BB"><span class="toc-number">1.4.</span> <span class="toc-text">隐藏类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%9D%E5%A4%96%E5%B1%9E%E6%80%A7"><span class="toc-number">1.5.</span> <span class="toc-text">额外属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E5%AD%97%E5%85%83%E7%B4%A0"><span class="toc-number">1.6.</span> <span class="toc-text">数字元素</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.7.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%99%E5%A6%82%E4%BD%95%E9%80%82%E7%94%A8%E4%BA%8E%E5%AF%B9%E8%B1%A1%E5%AD%97%E9%9D%A2%E9%87%8F%EF%BC%9F"><span class="toc-number">1.8.</span> <span class="toc-text">这如何适用于对象字面量？</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&text=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&title=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&is_video=false&description=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=理解Chrome/V8中对象的大小（译文）&body=Check out this article: https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&title=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&title=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&title=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&title=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&name=理解Chrome/V8中对象的大小（译文）&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/&t=理解Chrome/V8中对象的大小（译文）"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    April Ji
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang=ch>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="V8 中的快速属性 (Fast properties in V8)2019 年 7 月 5 日发布 · 标签: internals  原文：Fast properties in V8 - V8 官方博客，2017 年 8 月 30 日发布  在这篇博客文章中，我们想解释 V8 如何在内部处理 JavaScript 属性。从 JavaScript 的角度来看，属性只需要很少的区别。JavaScrip">
+<meta property="og:type" content="article">
+<meta property="og:title" content="V8 中的快速属性 (Fast properties in V8)（译文）">
+<meta property="og:url" content="https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/index.html">
+<meta property="og:site_name" content="April">
+<meta property="og:description" content="V8 中的快速属性 (Fast properties in V8)2019 年 7 月 5 日发布 · 标签: internals  原文：Fast properties in V8 - V8 官方博客，2017 年 8 月 30 日发布  在这篇博客文章中，我们想解释 V8 如何在内部处理 JavaScript 属性。从 JavaScript 的角度来看，属性只需要很少的区别。JavaScrip">
+<meta property="og:locale">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/jsobject.png">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/hidden-class.png">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/adding-properties.png">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/transitions.png">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/transition-trees.png">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/in-object-properties.png">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/fast-vs-slow-properties.png">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/hole.png">
+<meta property="og:image" content="https://apriljii.github.io/img/20260115/elements-accessor.png">
+<meta property="article:published_time" content="2019-07-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-01-29T09:55:02.131Z">
+<meta property="article:author" content="April Ji">
+<meta property="article:tag" content="V8">
+<meta property="article:tag" content="JavaScript">
+<meta property="article:tag" content="内部机制">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://apriljii.github.io/img/20260115/jsobject.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>V8 中的快速属性 (Fast properties in V8)（译文）</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+	<!-- mermaid -->
+	<script src='https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js'></script>
+	<script>
+		mermaid.initialize({
+			startOnLoad: true,
+			theme: 'dark',
+			securityLevel: 'loose'
+		});
+	</script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2019/07/04/frontend-performance-index-detail/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&text=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&title=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&is_video=false&description=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=V8 中的快速属性 (Fast properties in V8)（译文）&body=Check out this article: https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&title=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&title=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&title=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&title=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&name=V8 中的快速属性 (Fast properties in V8)（译文）&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&t=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc-container">
+        <div id="toc-toggle" class="toc-toggle-btn">
+          <i class="fa-solid fa-list"></i>
+          <span>Table of Contents</span>
+        </div>
+        <div id="toc" style="display: none;">
+          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#V8-%E4%B8%AD%E7%9A%84%E5%BF%AB%E9%80%9F%E5%B1%9E%E6%80%A7-Fast-properties-in-V8"><span class="toc-number">1.</span> <span class="toc-text">V8 中的快速属性 (Fast properties in V8)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E5%90%8D%E5%B1%9E%E6%80%A7-vs-%E5%85%83%E7%B4%A0"><span class="toc-number">1.1.</span> <span class="toc-text">命名属性 vs. 元素</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HiddenClass-%E5%92%8C-DescriptorArrays"><span class="toc-number">1.2.</span> <span class="toc-text">HiddenClass 和 DescriptorArrays</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%91%BD%E5%90%8D%E5%B1%9E%E6%80%A7"><span class="toc-number">1.3.</span> <span class="toc-text">三种不同类型的命名属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%83%E7%B4%A0%E6%88%96%E6%95%B0%E7%BB%84%E7%B4%A2%E5%BC%95%E5%B1%9E%E6%80%A7"><span class="toc-number">1.4.</span> <span class="toc-text">元素或数组索引属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#V8-%E5%B1%9E%E6%80%A7%E6%9C%BA%E5%88%B6%E6%80%BB%E7%BB%93%EF%BC%9A%E5%86%85%E5%AD%98%E4%B8%AD%E7%9A%84%E2%80%9D%E4%B9%90%E9%AB%98%E7%A7%AF%E6%9C%A8%E2%80%9D"><span class="toc-number">1.5.</span> <span class="toc-text">V8 属性机制总结：内存中的”乐高积木”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8F%A0-%E6%88%BF%E5%AD%90%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">1.5.1.</span> <span class="toc-text">🏠 房子的两种存储方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%8D-%E5%BB%BA%E7%AD%91%E5%B8%88%E7%9A%84%E2%80%9D%E8%AE%B0%E5%BF%86%E5%8D%A1%E7%89%87%E2%80%9D%EF%BC%88HiddenClass%EF%BC%89"><span class="toc-number">1.5.2.</span> <span class="toc-text">🔍 建筑师的”记忆卡片”（HiddenClass）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9A%A1-%E4%B8%89%E7%A7%8D%E5%AE%B6%E5%85%B7%E6%91%86%E6%94%BE%E6%96%B9%E5%BC%8F"><span class="toc-number">1.5.3.</span> <span class="toc-text">⚡ 三种家具摆放方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%A6-%E6%95%B0%E7%BB%84%E7%9A%84%E7%89%B9%E6%AE%8A%E5%A4%84%E7%90%86"><span class="toc-number">1.5.4.</span> <span class="toc-text">📦 数组的特殊处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%92%A1-%E5%86%99%E4%BB%A3%E7%A0%81%E7%9A%84%E5%90%AF%E7%A4%BA"><span class="toc-number">1.5.5.</span> <span class="toc-text">💡 写代码的启示</span></a></li></ol></li></ol></li></ol>
+        </div>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        V8 中的快速属性 (Fast properties in V8)（译文）
+    </h1>
+    
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">April Ji</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-07-04T16:00:00.000Z" class="dt-published" itemprop="datePublished">2019-07-05</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/JavaScript/" rel="tag">JavaScript</a>, <a class="p-category" href="/tags/V8/" rel="tag">V8</a>, <a class="p-category" href="/tags/%E5%86%85%E9%83%A8%E6%9C%BA%E5%88%B6/" rel="tag">内部机制</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="V8-中的快速属性-Fast-properties-in-V8"><a href="#V8-中的快速属性-Fast-properties-in-V8" class="headerlink" title="V8 中的快速属性 (Fast properties in V8)"></a>V8 中的快速属性 (Fast properties in V8)</h1><p><em>2019 年 7 月 5 日发布 · 标签: internals</em></p>
+<blockquote>
+<p>原文：<a href="https://v8.dev/blog/fast-properties">Fast properties in V8</a> - V8 官方博客，2017 年 8 月 30 日发布</p>
+</blockquote>
+<p>在这篇博客文章中，我们想解释 V8 如何在内部处理 JavaScript 属性。从 JavaScript 的角度来看，属性只需要很少的区别。JavaScript 对象大多表现得像字典，带有字符串键和任意对象作为值。然而，规范在迭代期间确实对整数索引属性和其他属性进行了不同的处理。除了这一点，不同的属性行为基本相同，无论它们是否是整数索引的。</p>
+<p>然而，在引擎内部，V8 确实依赖于几种不同的属性表示形式，以实现性能和内存方面的原因。在这篇博客文章中，我们将解释 V8 如何在处理动态添加的属性的同时提供快速属性访问。理解属性如何工作对于解释 V8 中的优化（如内联缓存）至关重要。</p>
+<p>这篇文章解释了整数索引属性和命名属性的处理差异。然后我们展示 V8 如何在添加命名属性时维护 HiddenClass，以便提供一种快速识别对象形状的方法。然后我们将继续深入了解命名属性如何根据使用情况进行优化，以实现快速访问或快速修改。在最后一部分，我们将详细说明 V8 如何处理整数索引属性或数组索引。</p>
+<h2 id="命名属性-vs-元素"><a href="#命名属性-vs-元素" class="headerlink" title="命名属性 vs. 元素"></a>命名属性 vs. 元素</h2><p>让我们从分析一个非常简单的对象开始，比如 <code>&#123;a: &quot;foo&quot;, b: &quot;bar&quot;&#125;</code>。这个对象有两个命名属性，<code>&quot;a&quot;</code> 和 <code>&quot;b&quot;</code>。它没有任何整数索引作为属性名。数组索引属性，更常见的是元素，主要出现在数组上。例如，数组 <code>[&quot;foo&quot;, &quot;bar&quot;]</code> 有两个数组索引属性：0，其值为 “foo”，和 1，其值为 “bar”。这是 V8 一般如何处理属性的第一个主要区别。</p>
+<p>下面的图表显示了一个基本的 JavaScript 对象在内存中的样子。</p>
+<img src="/img/20260115/jsobject.png" width="80%" alt="jsobject">
+
+<p>元素和属性存储在两个单独的数据结构中，这使得根据不同的使用模式添加和访问属性或元素更加高效。</p>
+<p>元素主要用于各种 <code>Array.prototype</code> 方法，例如 <code>pop</code> 或 <code>slice</code>。鉴于这些函数访问连续范围内的属性，V8 也在内部将它们表示为简单的数组——大多数时候。本文后面我们将解释我们有时如何切换到基于稀疏字典的表示形式来节省内存。</p>
+<p>命名属性以类似的方式存储在一个单独的数组中。然而，与元素不同，我们不能简单地使用键来推断它们在属性数组中的位置；我们需要一些额外的元数据。在 V8 中，每个 JavaScript 对象都有一个相关的 HiddenClass。HiddenClass 存储关于对象形状的信息，其中包括从属性名到属性存储索引的映射。为了使事情复杂化，我们有时为属性使用字典而不是简单的数组。我们将在专门的部分中详细解释这一点。</p>
+<p><strong>本节要点：</strong></p>
+<ul>
+<li>数组索引属性存储在单独的元素存储中。</li>
+<li>命名属性存储在属性存储中。</li>
+<li>元素和属性可以是数组或字典。</li>
+<li>每个 JavaScript 对象都有一个相关的 HiddenClass，用于保存对象形状的信息。</li>
+</ul>
+<h2 id="HiddenClass-和-DescriptorArrays"><a href="#HiddenClass-和-DescriptorArrays" class="headerlink" title="HiddenClass 和 DescriptorArrays"></a>HiddenClass 和 DescriptorArrays</h2><p>在解释元素和命名属性的总体区别后，我们需要看看 HiddenClass 在 V8 中是如何工作的。这个 HiddenClass 存储关于对象的元信息，包括对象上的属性数量和对对象原型的引用。HiddenClass 在概念上类似于典型面向对象编程语言中的类。然而，在像 JavaScript 这样的基于原型的语言中，通常不可能预先知道类。因此，在这种情况下，V8 会动态地创建和更新 HiddenClass，因为对象发生变化。HiddenClass 作为对象形状的标识符，是 V8 优化编译器和内联缓存的重要组成部分。例如，优化编译器可以通过 HiddenClass 确保兼容的对象结构，从而直接内联属性访问。</p>
+<p>让我们看看 HiddenClass 的重要部分。</p>
+<img src="/img/20260115/hidden-class.png" width="80%" alt="hidden-class">
+
+<p>在 V8 中，JavaScript 对象的第一个字段指向一个 HiddenClass。（事实上，这是 V8 堆上由垃圾收集器管理的任何对象的案例。）在属性方面，最重要的信息是第三个位字段，它存储属性数量，以及指向描述符数组的指针。描述符数组包含关于命名属性的信息，如属性名本身和值存储的位置。请注意，我们在这里不跟踪整数索引属性，因此描述符数组中没有条目。</p>
+<p>关于 HiddenClass 的基本假设是，具有相同结构的对象——例如，相同顺序的相同命名属性——共享相同的 HiddenClass。为了实现这一点，当属性被添加到对象时，我们使用不同的 HiddenClass。在下面的例子中，我们从一个空对象开始并添加三个命名属性。</p>
+<img src="/img/20260115/adding-properties.png" width="80%" alt="adding-properties">
+
+<p>每次添加新属性时，对象的 HiddenClass 都会改变。在后台，V8 创建一个转换树，将 HiddenClass 链接在一起。V8 知道当您向空对象添加属性 “a” 时应该采用哪个 HiddenClass。这个转换树确保如果您以相同的顺序添加相同的属性，最终会得到相同的最终 HiddenClass。下面的例子显示，即使我们在中间添加简单的索引属性，我们也会遵循相同的转换树。</p>
+<img src="/img/20260115/transitions.png" width="80%" alt="transitions">
+
+<p>然而，如果我们创建一个新对象并添加不同的属性，在这种情况下是属性 <code>&quot;d&quot;</code>，V8 会为新的 HiddenClass 创建一个单独的分支。</p>
+<img src="/img/20260115/transition-trees.png" width="80%" alt="transition-trees">
+
+<p><strong>本节要点：</strong></p>
+<ul>
+<li>具有相同结构（相同顺序的相同属性）的对象具有相同的 HiddenClass</li>
+<li>默认情况下，每个新添加的命名属性都会导致创建新的 HiddenClass。</li>
+<li>添加数组索引属性不会创建新的 HiddenClass。</li>
+</ul>
+<h2 id="三种不同类型的命名属性"><a href="#三种不同类型的命名属性" class="headerlink" title="三种不同类型的命名属性"></a>三种不同类型的命名属性</h2><p>在概述了 V8 如何使用 HiddenClass 来跟踪对象形状后，让我们深入了解这些属性实际上是如何存储的。如上文介绍中解释的，有两种基本类型的属性：命名属性和索引属性。以下部分涵盖命名属性。</p>
+<p>像 <code>&#123;a: 1, b: 2&#125;</code> 这样的简单对象在 V8 中可以有各种内部表示。虽然 JavaScript 对象从外部看起来或多或少像简单的字典，但 V8 试图避免字典，因为它们会妨碍某些优化，例如我们将在另一篇文章中解释的内联缓存。</p>
+<p><strong>对象内属性 vs. 普通属性：</strong> V8 支持所谓的对象内属性，这些属性直接存储在对象本身上。这些是 V8 中可用的最快的属性，因为它们可以无需任何间接访问即可访问。对象内属性的数量由对象的初始大小预先确定。如果添加的属性多于对象中的空间，它们将被存储在属性存储中。属性存储添加了一个间接级别，但可以独立增长。</p>
+<img src="/img/20260115/in-object-properties.png" width="80%" alt="in-object-properties">
+
+<p><strong>快速属性 vs. 慢速属性：</strong> 下一个重要区别是快速属性和慢速属性之间的区别。通常，我们将存储在线性属性存储中的属性定义为”快速”。快速属性只需通过属性存储中的索引即可访问。要从属性名获取属性存储中实际位置，我们必须查阅 HiddenClass 上的描述符数组，正如我们之前概述的那样。</p>
+<img src="/img/20260115/fast-vs-slow-properties.png" width="80%" alt="fast-vs-slow-properties">
+
+<p>然而，如果从对象中添加和删除了许多属性，它可能会产生大量时间和内存开销来维护描述符数组和 HiddenClass。因此，V8 还支持所谓的慢速属性。具有慢速属性的对象将一个自包含的字典作为属性存储。所有属性元信息不再存储在 HiddenClass 的描述符数组中，而是直接存储在属性字典中。因此，可以在不更新 HiddenClass 的情况下添加和删除属性。由于内联缓存不适用于字典属性，后者通常比快速属性慢。</p>
+<p><strong>本节要点：</strong></p>
+<ul>
+<li>有三种不同的命名属性类型：对象内、快速和慢速/字典。<ol>
+<li>对象内属性直接存储在对象本身上，提供最快的访问。</li>
+<li>快速属性位于属性存储中，所有元信息存储在 HiddenClass 的描述符数组中。</li>
+<li>慢速属性位于自包含的属性字典中，元信息不再通过 HiddenClass 共享。</li>
+</ol>
+</li>
+<li>慢速属性允许高效的属性移除和添加，但访问速度比其他两种类型慢。</li>
+</ul>
+<h2 id="元素或数组索引属性"><a href="#元素或数组索引属性" class="headerlink" title="元素或数组索引属性"></a>元素或数组索引属性</h2><p>到目前为止，我们已经查看了命名属性并忽略了通常与数组一起使用的整数索引属性。整数索引属性的处理并不比命名属性简单。即使所有索引属性总是单独保存在元素存储中，但元素有 20 种不同类型！</p>
+<p><strong>紧凑元素或空洞元素：</strong> V8 做出的第一个主要区别是元素后备存储是否紧凑或有空洞。如果删除索引元素，或者例如不定义它，您会在后备存储中得到空洞。一个简单的例子是 <code>[1,,3]</code>，其中第二个条目是空洞。下面的例子说明了这个问题：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> o = [<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>];</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(o[<span class="number">1</span>]); <span class="comment">// 打印 &#x27;b&#x27;。</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> o[<span class="number">1</span>]; <span class="comment">// 在元素存储中引入空洞。</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(o[<span class="number">1</span>]); <span class="comment">// 打印 &#x27;undefined&#x27;；属性 1 不存在。</span></span><br><span class="line">o.<span class="property">__proto__</span> = &#123; <span class="number">1</span>: <span class="string">&quot;B&quot;</span> &#125;; <span class="comment">// 在原型上定义属性 1。</span></span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(o[<span class="number">0</span>]); <span class="comment">// 打印 &#x27;a&#x27;。</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(o[<span class="number">1</span>]); <span class="comment">// 打印 &#x27;B&#x27;。</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(o[<span class="number">2</span>]); <span class="comment">// 打印 &#x27;c&#x27;。</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(o[<span class="number">3</span>]); <span class="comment">// 打印 undefined</span></span><br></pre></td></tr></table></figure>
+
+<img src="/img/20260115/hole.png" width="80%" alt="hole">
+
+<p>简而言之，如果属性不在接收者上，我们必须继续在原型链上查找。鉴于元素是自包含的，例如我们不在 HiddenClass 上存储关于存在索引属性的信息，我们需要一个特殊值，称为 the_hole，来标记不存在的属性。这对 Array 函数的性能至关重要。如果我们知道没有空洞，即元素存储是紧凑的，我们可以在不进行原型链上的昂贵查找的情况下执行本地操作。</p>
+<p><strong>快速元素或字典元素：</strong> 对元素做出的第二个主要区别是它们是快速还是字典模式。快速元素是简单的 VM 内部数组，其中属性索引映射到元素存储中的索引。然而，这种简单的表示对于只有少数条目被占用的非常大的稀疏/空洞数组来说相当浪费。在这种情况下，我们使用基于字典的表示来节省内存，但代价是稍微慢一些的访问：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> sparseArray = [];</span><br><span class="line">sparseArray[<span class="number">9999</span>] = <span class="string">&quot;foo&quot;</span>; <span class="comment">// 创建具有字典元素的数组。</span></span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，分配一个具有 10k 条目的完整数组会相当浪费。相反发生的是，V8 创建一个字典，我们在其中存储键-值-描述符三元组。在这种情况下，键将是 <code>&#39;9999&#39;</code>，值将是 <code>&#39;foo&#39;</code>，并使用默认描述符。鉴于我们没有办法在 HiddenClass 上存储描述符详细信息，每当您使用自定义描述符定义索引属性时，V8 就会诉诸慢速元素：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> array = [];</span><br><span class="line"><span class="title class_">Object</span>.<span class="title function_">defineProperty</span>(array, <span class="number">0</span>, &#123; <span class="attr">value</span>: <span class="string">&quot;fixed&quot;</span>, <span class="attr">configurable</span>: <span class="literal">false</span> &#125;);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(array[<span class="number">0</span>]); <span class="comment">// 打印 &#x27;fixed&#x27;。</span></span><br><span class="line">array[<span class="number">0</span>] = <span class="string">&quot;other value&quot;</span>; <span class="comment">// 无法覆盖索引 0。</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(array[<span class="number">0</span>]); <span class="comment">// 仍然打印 &#x27;fixed&#x27;。</span></span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，我们在数组上添加了一个不可配置的属性。这个信息存储在慢速元素字典三元组的描述符部分。重要的是要注意，Array 函数在具有慢速元素的对象上执行速度要慢得多。</p>
+<p><strong>Smi 和双精度元素：</strong> 对于快速元素，V8 中还有另一个重要的区别。例如，如果您只在数组中存储整数，这是一个常见的用例，GC 不必查看数组，因为整数直接作为所谓的 Smi（small integers，小整数）编码到位。另一个特殊情况是只包含双精度数的数组。与 Smi 不同，浮点数通常表示为占用多个字的完整对象。然而，V8 为纯双精度数组存储原始双精度数，以避免内存和性能开销。下面的例子列出了 Smi 和双精度元素的 4 个例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> a1 = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]; <span class="comment">// Smi 紧凑</span></span><br><span class="line"><span class="keyword">const</span> a2 = [<span class="number">1</span>, , <span class="number">3</span>]; <span class="comment">// Smi 空洞，a2[1] 从原型读取</span></span><br><span class="line"><span class="keyword">const</span> b1 = [<span class="number">1.1</span>, <span class="number">2</span>, <span class="number">3</span>]; <span class="comment">// 双精度紧凑</span></span><br><span class="line"><span class="keyword">const</span> b2 = [<span class="number">1.1</span>, , <span class="number">3</span>]; <span class="comment">// 双精度空洞，b2[1] 从原型读取</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>特殊元素：</strong> 到目前为止，我们涵盖了 20 种元素类型中的 7 种。为简单起见，我们排除了 TypedArrays 的 9 种元素类型、字符串包装器的两种，以及最后但并非最不重要的，arguments 对象的两种特殊元素类型。</p>
+<p><strong>ElementsAccessor：</strong> 正如您可以想象的，我们并不急于用 C++ 为每种元素类型编写 Array 函数 20 次。这就是一些 C++ 魔法发挥作用的地方。我们不是一遍又一遍地实现 Array 函数，而是构建了 <code>ElementsAccessor</code>，在这里我们主要只需要实现从后备存储访问元素的简单函数。<code>ElementsAccessor</code> 依赖 CRTP 来为每个 Array 函数创建专门的版本。因此，当您在数组上调用像 <code>slice</code> 这样的东西时，V8 内部调用用 C++ 编写的内置函数，并通过 <code>ElementsAccessor</code> 分派到函数的专门版本：</p>
+<img src="/img/20260115/elements-accessor.png" width="80%" alt="elements-accessor">
+
+<p><strong>本节要点：</strong></p>
+<ul>
+<li>有快速和字典模式的索引属性和元素。</li>
+<li>快速属性可以是紧凑的，也可以包含空洞，这表明索引属性已被删除。</li>
+<li>元素根据其内容进行专门化，以加速 Array 函数并减少 GC 开销。</li>
+</ul>
+<p>理解属性如何工作是 V8 中许多优化的关键。对于 JavaScript 开发者，许多这些内部决策并不直接可见，但它们解释了为什么某些代码模式比其他模式更快。更改属性或元素类型通常会导致 V8 创建不同的 HiddenClass，这可能导致类型污染，从而阻止 V8 生成最佳代码。敬请期待更多关于 V8 VM 内部工作方式的文章。</p>
+<h2 id="V8-属性机制总结：内存中的”乐高积木”"><a href="#V8-属性机制总结：内存中的”乐高积木”" class="headerlink" title="V8 属性机制总结：内存中的”乐高积木”"></a>V8 属性机制总结：内存中的”乐高积木”</h2><p>想象一下 JavaScript 对象就像一栋房子，而 V8 就是那个聪明的建筑师。房子需要存放家具（属性），但建筑师不想每次都重新设计整个房子。下面让我们用通俗的比喻来理解 V8 的属性机制：</p>
+<h3 id="🏠-房子的两种存储方式"><a href="#🏠-房子的两种存储方式" class="headerlink" title="🏠 房子的两种存储方式"></a>🏠 房子的两种存储方式</h3><ul>
+<li><strong>元素存储</strong>：专门存放数组中的物品（索引属性），就像客厅里的整齐货架</li>
+<li><strong>属性存储</strong>：专门存放各种家具和装饰（命名属性），就像卧室里的抽屉柜</li>
+</ul>
+<h3 id="🔍-建筑师的”记忆卡片”（HiddenClass）"><a href="#🔍-建筑师的”记忆卡片”（HiddenClass）" class="headerlink" title="🔍 建筑师的”记忆卡片”（HiddenClass）"></a>🔍 建筑师的”记忆卡片”（HiddenClass）</h3><p>每个房子都有一个”建筑蓝图”（HiddenClass），记录着房子的结构。当你添加新家具时，建筑师会更新蓝图。但如果两栋房子结构完全相同，它们就能共享同一个蓝图！</p>
+<h3 id="⚡-三种家具摆放方式"><a href="#⚡-三种家具摆放方式" class="headerlink" title="⚡ 三种家具摆放方式"></a>⚡ 三种家具摆放方式</h3><ol>
+<li><strong>对象内家具</strong>：最常用的家具直接放在客厅里，伸手就能拿到（最快）</li>
+<li><strong>快速家具</strong>：其他家具放在仓库里，有详细的查找地图（较快）</li>
+<li><strong>慢速家具</strong>：很少用的家具放在杂物间，需要慢慢找（最慢，但灵活）</li>
+</ol>
+<h3 id="📦-数组的特殊处理"><a href="#📦-数组的特殊处理" class="headerlink" title="📦 数组的特殊处理"></a>📦 数组的特殊处理</h3><p>数组就像一个智能货架：</p>
+<ul>
+<li><strong>紧凑货架</strong>：物品排得整整齐齐，没有空隙</li>
+<li><strong>有洞货架</strong>：有些位置是空的（删除了元素）</li>
+<li><strong>字典货架</strong>：非常稀疏的数组，改用查找表节省空间</li>
+</ul>
+<h3 id="💡-写代码的启示"><a href="#💡-写代码的启示" class="headerlink" title="💡 写代码的启示"></a>💡 写代码的启示</h3><ul>
+<li><strong>保持对象结构一致</strong>：同样结构的房子更容易批量建造</li>
+<li><strong>避免频繁增删属性</strong>：装修太频繁会让建筑师很头疼</li>
+<li><strong>合理使用数组</strong>：连续的数组比稀疏数组更高效</li>
+</ul>
+<p>记住，V8 的目标就是让你的 JavaScript 代码运行得像闪电一样快！通过理解这些内部机制，你可以写出更高效的代码，让 V8 这位建筑师更好地为你服务。</p>
+<hr>
+<p><em>作者：Camillo Bruni (<a href="https://twitter.com/camillobruni">@camillobruni</a>)，也是 <a href="/blog/fast-for-in">“Fast for-in”</a> 的作者。</em></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="https://github.com/apriljii">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#V8-%E4%B8%AD%E7%9A%84%E5%BF%AB%E9%80%9F%E5%B1%9E%E6%80%A7-Fast-properties-in-V8"><span class="toc-number">1.</span> <span class="toc-text">V8 中的快速属性 (Fast properties in V8)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E5%90%8D%E5%B1%9E%E6%80%A7-vs-%E5%85%83%E7%B4%A0"><span class="toc-number">1.1.</span> <span class="toc-text">命名属性 vs. 元素</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HiddenClass-%E5%92%8C-DescriptorArrays"><span class="toc-number">1.2.</span> <span class="toc-text">HiddenClass 和 DescriptorArrays</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%91%BD%E5%90%8D%E5%B1%9E%E6%80%A7"><span class="toc-number">1.3.</span> <span class="toc-text">三种不同类型的命名属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%83%E7%B4%A0%E6%88%96%E6%95%B0%E7%BB%84%E7%B4%A2%E5%BC%95%E5%B1%9E%E6%80%A7"><span class="toc-number">1.4.</span> <span class="toc-text">元素或数组索引属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#V8-%E5%B1%9E%E6%80%A7%E6%9C%BA%E5%88%B6%E6%80%BB%E7%BB%93%EF%BC%9A%E5%86%85%E5%AD%98%E4%B8%AD%E7%9A%84%E2%80%9D%E4%B9%90%E9%AB%98%E7%A7%AF%E6%9C%A8%E2%80%9D"><span class="toc-number">1.5.</span> <span class="toc-text">V8 属性机制总结：内存中的”乐高积木”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8F%A0-%E6%88%BF%E5%AD%90%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">1.5.1.</span> <span class="toc-text">🏠 房子的两种存储方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%8D-%E5%BB%BA%E7%AD%91%E5%B8%88%E7%9A%84%E2%80%9D%E8%AE%B0%E5%BF%86%E5%8D%A1%E7%89%87%E2%80%9D%EF%BC%88HiddenClass%EF%BC%89"><span class="toc-number">1.5.2.</span> <span class="toc-text">🔍 建筑师的”记忆卡片”（HiddenClass）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9A%A1-%E4%B8%89%E7%A7%8D%E5%AE%B6%E5%85%B7%E6%91%86%E6%94%BE%E6%96%B9%E5%BC%8F"><span class="toc-number">1.5.3.</span> <span class="toc-text">⚡ 三种家具摆放方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%A6-%E6%95%B0%E7%BB%84%E7%9A%84%E7%89%B9%E6%AE%8A%E5%A4%84%E7%90%86"><span class="toc-number">1.5.4.</span> <span class="toc-text">📦 数组的特殊处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%92%A1-%E5%86%99%E4%BB%A3%E7%A0%81%E7%9A%84%E5%90%AF%E7%A4%BA"><span class="toc-number">1.5.5.</span> <span class="toc-text">💡 写代码的启示</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&text=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&title=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&is_video=false&description=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=V8 中的快速属性 (Fast properties in V8)（译文）&body=Check out this article: https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&title=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&title=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&title=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&title=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&name=V8 中的快速属性 (Fast properties in V8)（译文）&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2019/07/05/v8-fast-properties-zh/&t=V8 中的快速属性 (Fast properties in V8)（译文）"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    April Ji
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

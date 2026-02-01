@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang=ch>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="问题最近接了新的活动需求，很多流程虽然与原项目一样，但是原项目代码已经不容易维护了，所以合计了一下，单独拿出来重新写一遍，项目目录结构、类库选用了最近做的活动项目模板。终于完善好了整个项目结构，写好了页面开始写业务逻辑了。 然而，就在调通了登录接口之后，发现不管调啥接口，全部都返回“用户未登录的状态”。  现在的开发环境，域名是localhost:8181，这里的路径是本地页面的文件夹路径；ngi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于Http Cookie的跨域问题">
+<meta property="og:url" content="https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="April">
+<meta property="og:description" content="问题最近接了新的活动需求，很多流程虽然与原项目一样，但是原项目代码已经不容易维护了，所以合计了一下，单独拿出来重新写一遍，项目目录结构、类库选用了最近做的活动项目模板。终于完善好了整个项目结构，写好了页面开始写业务逻辑了。 然而，就在调通了登录接口之后，发现不管调啥接口，全部都返回“用户未登录的状态”。  现在的开发环境，域名是localhost:8181，这里的路径是本地页面的文件夹路径；ngi">
+<meta property="og:locale">
+<meta property="article:published_time" content="2017-04-22T07:20:46.000Z">
+<meta property="article:modified_time" content="2026-01-12T07:55:11.537Z">
+<meta property="article:author" content="April Ji">
+<meta property="article:tag" content="跨域,cookie">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>关于Http Cookie的跨域问题</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+	<!-- mermaid -->
+	<script src='https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js'></script>
+	<script>
+		mermaid.initialize({
+			startOnLoad: true,
+			theme: 'dark',
+			securityLevel: 'loose'
+		});
+	</script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2017/06/18/Web%E7%89%88%E4%BA%94%E5%AD%90%E6%A3%8B%E5%B0%8F%E6%B8%B8%E6%88%8F%E7%9A%84%E5%AE%9E%E7%8E%B0-Canvas/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2017/03/31/Qbuilt-%E5%AE%9E%E7%8E%B0%E5%B9%B6%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84%E8%84%9A%E6%89%8B%E6%9E%B6%E5%B7%A5%E5%85%B7/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&text=关于Http Cookie的跨域问题"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&title=关于Http Cookie的跨域问题"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&is_video=false&description=关于Http Cookie的跨域问题"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=关于Http Cookie的跨域问题&body=Check out this article: https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&title=关于Http Cookie的跨域问题"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&title=关于Http Cookie的跨域问题"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&title=关于Http Cookie的跨域问题"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&title=关于Http Cookie的跨域问题"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&name=关于Http Cookie的跨域问题&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&t=关于Http Cookie的跨域问题"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc-container">
+        <div id="toc-toggle" class="toc-toggle-btn">
+          <i class="fa-solid fa-list"></i>
+          <span>Table of Contents</span>
+        </div>
+        <div id="toc" style="display: none;">
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="toc-number">1.1.</span> <span class="toc-text">问题的解决方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Request-Coolkies-%E7%9A%84%E6%9D%A5%E5%8E%86"><span class="toc-number">1.2.</span> <span class="toc-text">Request Coolkies 的来历</span></a></li></ol></li></ol>
+        </div>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        关于Http Cookie的跨域问题
+    </h1>
+    
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">April Ji</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2017-04-22T07:20:46.000Z" class="dt-published" itemprop="datePublished">2017-04-22</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/%E8%B7%A8%E5%9F%9F-cookie/" rel="tag">跨域,cookie</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>最近接了新的活动需求，很多流程虽然与原项目一样，但是原项目代码已经不容易维护了，所以合计了一下，单独拿出来重新写一遍，项目目录结构、类库选用了最近做的活动项目模板。终于完善好了整个项目结构，写好了页面开始写业务逻辑了。 然而，就在调通了登录接口之后，发现不管调啥接口，全部都返回“用户未登录的状态”。 </p>
+<p>现在的开发环境，域名是localhost:8181，这里的路径是本地页面的文件夹路径；nginx配置了反向代理，通过反向代理访问测试环境的后台接口，域名是类似这样的：<a href="https://stg1.test.com。">https://stg1.test.com。</a></p>
+<p>同样在本地开发，代理到测试环境后台接口，域名和后台接口域名都一样，原来的页面就可以，但是现在服务器就无法维持用户的登录状态了。</p>
+<p>这时候就想到服务器要维持用户登录状态，需要通过sessionid这个标识，来看看现在的情况，确实这个会话标识变掉了。以下为模拟实验截图：</p>
+<p>接口1-（登录接口）的Cookies信息<br>![43](/img/关于Http Cookie的跨域问题/1.png)</p>
+<p> “接口2的Cookies信息”<br>![43](/img/关于Http Cookie的跨域问题/2.png)</p>
+<p>现在的JSSESSIONID两个接口返回的不一致。 再开看看原页面的访问情况对比一下，看看哪里不一样了。果然，response cookies两种情况下都有返回，但是发现，原来页面先进行登录，访问接口2时，requst cookies带上了信息。而重写的页面的XHR对象中就没有。</p>
+<p>“原页面的Cookies信息”<br>![43](/img/关于Http Cookie的跨域问题/3.png)</p>
+<p>然后问题就来了，看起来明明是一样的接口调用，重写的页面不能保持登录状态，而对比之前页面，唯一的不同就是接口2调用时，Request Cookies里面没有值。 那这个值到底是怎么来的，搞清楚这个问题应该就可以解决了。</p>
+<h3 id="问题的解决方法"><a href="#问题的解决方法" class="headerlink" title="问题的解决方法"></a>问题的解决方法</h3><h3 id="Request-Coolkies-的来历"><a href="#Request-Coolkies-的来历" class="headerlink" title="Request Coolkies 的来历"></a>Request Coolkies 的来历</h3><p>要弄清楚这个问题，还是要从浏览器与服务器二者之间的通信说起。浏览器需要从服务器拿数据，需要通过ajax请求来实现。我们可以在调试工具中观察调用接口信息时，这个Request Cookies 和 Response Cookies是放在XHR这个对象里的。 这个东东的全称就是XmlHttpRequest，ajax中最最重要的东西就是它了。可以这样创建它：</p>
+<pre><code>variable = new XMLHttpRequest();</code></pre>
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="https://github.com/apriljii">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="toc-number">1.1.</span> <span class="toc-text">问题的解决方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Request-Coolkies-%E7%9A%84%E6%9D%A5%E5%8E%86"><span class="toc-number">1.2.</span> <span class="toc-text">Request Coolkies 的来历</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&text=关于Http Cookie的跨域问题"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&title=关于Http Cookie的跨域问题"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&is_video=false&description=关于Http Cookie的跨域问题"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=关于Http Cookie的跨域问题&body=Check out this article: https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&title=关于Http Cookie的跨域问题"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&title=关于Http Cookie的跨域问题"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&title=关于Http Cookie的跨域问题"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&title=关于Http Cookie的跨域问题"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&name=关于Http Cookie的跨域问题&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2017/04/22/%E5%85%B3%E4%BA%8EHttp%20Cookie%E7%9A%84%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/&t=关于Http Cookie的跨域问题"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    April Ji
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

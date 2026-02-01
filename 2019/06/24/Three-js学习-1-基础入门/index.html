@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang=ch>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言最近想学习 Three.js，想着做个炫酷效果，结果发现最基础的东西都还没搞清楚。Three.js 是个基于 WebGL 的 JavaScript 库，让我们在浏览器里搞 3D 图形不用直接面对一堆复杂的 WebGL API。 本系列笔记想把学习过程记录下来，从最基础的开始慢慢深入。希望能帮到跟我一样刚入门的小伙伴们。 Three.js 到底是啥简单说，Three.js 就是帮我们封装好了 W">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Three.js学习(1)-基础入门">
+<meta property="og:url" content="https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="April">
+<meta property="og:description" content="前言最近想学习 Three.js，想着做个炫酷效果，结果发现最基础的东西都还没搞清楚。Three.js 是个基于 WebGL 的 JavaScript 库，让我们在浏览器里搞 3D 图形不用直接面对一堆复杂的 WebGL API。 本系列笔记想把学习过程记录下来，从最基础的开始慢慢深入。希望能帮到跟我一样刚入门的小伙伴们。 Three.js 到底是啥简单说，Three.js 就是帮我们封装好了 W">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-06-24T08:39:21.000Z">
+<meta property="article:modified_time" content="2026-02-01T07:16:33.465Z">
+<meta property="article:author" content="April Ji">
+<meta property="article:tag" content="Three.js">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Three.js学习(1)-基础入门</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+	<!-- mermaid -->
+	<script src='https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js'></script>
+	<script>
+		mermaid.initialize({
+			startOnLoad: true,
+			theme: 'dark',
+			securityLevel: 'loose'
+		});
+	</script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2019/06/25/Three-js%E5%AD%A6%E4%B9%A0-2-%E7%BB%98%E5%88%B6%E5%9C%B0%E7%90%83/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&text=Three.js学习(1)-基础入门"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&title=Three.js学习(1)-基础入门"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&is_video=false&description=Three.js学习(1)-基础入门"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Three.js学习(1)-基础入门&body=Check out this article: https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&title=Three.js学习(1)-基础入门"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&title=Three.js学习(1)-基础入门"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&title=Three.js学习(1)-基础入门"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&title=Three.js学习(1)-基础入门"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&name=Three.js学习(1)-基础入门&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&t=Three.js学习(1)-基础入门"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc-container">
+        <div id="toc-toggle" class="toc-toggle-btn">
+          <i class="fa-solid fa-list"></i>
+          <span>Table of Contents</span>
+        </div>
+        <div id="toc" style="display: none;">
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Three-js-%E5%88%B0%E5%BA%95%E6%98%AF%E5%95%A5"><span class="toc-number">2.</span> <span class="toc-text">Three.js 到底是啥</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF-Scene"><span class="toc-number">2.1.</span> <span class="toc-text">场景(Scene)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E6%9C%BA-Camera"><span class="toc-number">2.2.</span> <span class="toc-text">相机(Camera)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%B2%E6%9F%93%E5%99%A8-Renderer"><span class="toc-number">2.3.</span> <span class="toc-text">渲染器(Renderer)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%89%8B%E8%AF%95%E8%AF%95-%E8%BD%AC%E4%B8%AA%E7%AB%8B%E6%96%B9%E4%BD%93"><span class="toc-number">3.</span> <span class="toc-text">动手试试 - 转个立方体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BD%A2%E7%8A%B6%E5%92%8C%E6%9D%90%E8%B4%A8"><span class="toc-number">4.</span> <span class="toc-text">形状和材质</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%84%E7%A7%8D%E5%BD%A2%E7%8A%B6-Geometry"><span class="toc-number">4.1.</span> <span class="toc-text">各种形状(Geometry)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9D%90%E8%B4%A8-Material"><span class="toc-number">4.2.</span> <span class="toc-text">材质(Material)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%89%E7%BA%BF-%E8%AE%A9-3D-%E7%9C%8B%E8%B5%B7%E6%9D%A5%E6%9B%B4%E7%AB%8B%E4%BD%93%E7%9A%84%E7%A7%98%E5%AF%86"><span class="toc-number">5.</span> <span class="toc-text">光线 - 让 3D 看起来更立体的秘密</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9D%90%E6%A0%87%E3%80%81%E7%A7%BB%E5%8A%A8%E3%80%81%E6%97%8B%E8%BD%AC%E6%93%8D%E4%BD%9C"><span class="toc-number">6.</span> <span class="toc-text">坐标、移动、旋转操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E7%BD%AE-Position"><span class="toc-number">6.1.</span> <span class="toc-text">位置(Position)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%8B%E8%BD%AC-Rotation"><span class="toc-number">6.2.</span> <span class="toc-text">旋转(Rotation)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%A9%E6%94%BE-Scale"><span class="toc-number">6.3.</span> <span class="toc-text">缩放(Scale)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%82%E9%85%8D%E4%B8%8D%E5%90%8C%E5%B1%8F%E5%B9%95"><span class="toc-number">7.</span> <span class="toc-text">适配不同屏幕</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">8.</span> <span class="toc-text">写在最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%BA%90"><span class="toc-number">9.</span> <span class="toc-text">学习资源</span></a></li></ol>
+        </div>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Three.js学习(1)-基础入门
+    </h1>
+    
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">April Ji</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-06-24T08:39:21.000Z" class="dt-published" itemprop="datePublished">2019-06-24</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Three-js/" rel="tag">Three.js</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近想学习 Three.js，想着做个炫酷效果，结果发现最基础的东西都还没搞清楚。Three.js 是个基于 WebGL 的 JavaScript 库，让我们在浏览器里搞 3D 图形不用直接面对一堆复杂的 WebGL API。</p>
+<p>本系列笔记想把学习过程记录下来，从最基础的开始慢慢深入。希望能帮到跟我一样刚入门的小伙伴们。</p>
+<h2 id="Three-js-到底是啥"><a href="#Three-js-到底是啥" class="headerlink" title="Three.js 到底是啥"></a>Three.js 到底是啥</h2><p>简单说，Three.js 就是帮我们封装好了 WebGL 的那些复杂操作。你知道 WebGL 吧？就是浏览器里的 3D 绘图标准，但直接用它写代码简直要命，一堆数学计算不说，还要处理各种底层细节。</p>
+<p>Three.js 就好比在 WebGL 外面包了一层棉花糖，让我们用更简单的 API 就能做出 3D 效果。核心就三个东西：场景、相机、渲染器。搞定了这些，就能开始画了。</p>
+<h3 id="场景-Scene"><a href="#场景-Scene" class="headerlink" title="场景(Scene)"></a>场景(Scene)</h3><p>场景就像个大容器，把要显示的所有 3D 对象都放进去。它本身是看不见的，就负责管理，管着里面所有的东西。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> scene = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">Scene</span>();</span><br></pre></td></tr></table></figure>
+
+<h3 id="相机-Camera"><a href="#相机-Camera" class="headerlink" title="相机(Camera)"></a>相机(Camera)</h3><p>相机决定了你从哪个角度看场景。就像拍照的时候，可以选近景、远景、广角。Three.js 里最常用的是透视相机，看起来更真实。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 75度视野角，宽高比，跟近裁剪面，远裁剪面</span></span><br><span class="line"><span class="keyword">var</span> camera = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">PerspectiveCamera</span>(</span><br><span class="line">  <span class="number">75</span>,</span><br><span class="line">  <span class="variable language_">window</span>.<span class="property">innerWidth</span> / <span class="variable language_">window</span>.<span class="property">innerHeight</span>,</span><br><span class="line">  <span class="number">0.1</span>,</span><br><span class="line">  <span class="number">1000</span></span><br><span class="line">);</span><br><span class="line">camera.<span class="property">position</span>.<span class="title function_">set</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">5</span>); <span class="comment">// 相机放这儿</span></span><br><span class="line">camera.<span class="title function_">lookAt</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>); <span class="comment">// 朝着原点看</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="渲染器-Renderer"><a href="#渲染器-Renderer" class="headerlink" title="渲染器(Renderer)"></a>渲染器(Renderer)</h3><p>渲染器就是把场景和相机结合，生成最终的画面显示在屏幕上。WebGLRenderer 最常用的那个。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> renderer = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">WebGLRenderer</span>();</span><br><span class="line">renderer.<span class="title function_">setSize</span>(<span class="variable language_">window</span>.<span class="property">innerWidth</span>, <span class="variable language_">window</span>.<span class="property">innerHeight</span>);</span><br><span class="line">renderer.<span class="title function_">setClearColor</span>(<span class="number">0x000000</span>); <span class="comment">// 背景颜色，黑色</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(renderer.<span class="property">domElement</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="动手试试-转个立方体"><a href="#动手试试-转个立方体" class="headerlink" title="动手试试 - 转个立方体"></a>动手试试 - 转个立方体</h2><p>实现最简单的例子：显示一个会转的绿色立方体。</p>
+<p>HTML 文件：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Three.js 小试牛刀<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">      <span class="selector-tag">body</span> &#123;</span></span><br><span class="line"><span class="language-css">        <span class="attribute">margin</span>: <span class="number">0</span>;</span></span><br><span class="line"><span class="language-css">      &#125;</span></span><br><span class="line"><span class="language-css">      <span class="selector-tag">canvas</span> &#123;</span></span><br><span class="line"><span class="language-css">        <span class="attribute">display</span>: block;</span></span><br><span class="line"><span class="language-css">      &#125;</span></span><br><span class="line"><span class="language-css">    </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;app.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>JavaScript 代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第一步：搭场景</span></span><br><span class="line"><span class="keyword">var</span> scene = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">Scene</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 第二步：架相机</span></span><br><span class="line"><span class="keyword">var</span> camera = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">PerspectiveCamera</span>(</span><br><span class="line">  <span class="number">75</span>,</span><br><span class="line">  <span class="variable language_">window</span>.<span class="property">innerWidth</span> / <span class="variable language_">window</span>.<span class="property">innerHeight</span>,</span><br><span class="line">  <span class="number">0.1</span>,</span><br><span class="line">  <span class="number">1000</span></span><br><span class="line">);</span><br><span class="line">camera.<span class="property">position</span>.<span class="property">z</span> = <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 第三步：渲染器</span></span><br><span class="line"><span class="keyword">var</span> renderer = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">WebGLRenderer</span>();</span><br><span class="line">renderer.<span class="title function_">setSize</span>(<span class="variable language_">window</span>.<span class="property">innerWidth</span>, <span class="variable language_">window</span>.<span class="property">innerHeight</span>);</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(renderer.<span class="property">domElement</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 第四步：生成一个立方体形状</span></span><br><span class="line"><span class="keyword">var</span> geometry = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">BoxGeometry</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 第五步：生成材质</span></span><br><span class="line"><span class="keyword">var</span> material = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">MeshBasicMaterial</span>(&#123; <span class="attr">color</span>: <span class="number">0x00ff00</span> &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 第六步：形状+材质 = 完整物体</span></span><br><span class="line"><span class="keyword">var</span> cube = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">Mesh</span>(geometry, material);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 第七步：把物体放进场景</span></span><br><span class="line">scene.<span class="title function_">add</span>(cube);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 第八步：动起来</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">animate</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="title function_">requestAnimationFrame</span>(animate);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 让立方体转起来</span></span><br><span class="line">  cube.<span class="property">rotation</span>.<span class="property">x</span> += <span class="number">0.01</span>;</span><br><span class="line">  cube.<span class="property">rotation</span>.<span class="property">y</span> += <span class="number">0.01</span>;</span><br><span class="line"></span><br><span class="line">  renderer.<span class="title function_">render</span>(scene, camera);</span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_">animate</span>();</span><br></pre></td></tr></table></figure>
+
+<p>打开浏览器，就能看到一个绿色的立方体在不停旋转！是不是超简单？</p>
+<h2 id="形状和材质"><a href="#形状和材质" class="headerlink" title="形状和材质"></a>形状和材质</h2><h3 id="各种形状-Geometry"><a href="#各种形状-Geometry" class="headerlink" title="各种形状(Geometry)"></a>各种形状(Geometry)</h3><p>Three.js 内置了很多现成的形状，不用自己算顶点：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 长方体</span></span><br><span class="line"><span class="keyword">var</span> box = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">BoxGeometry</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 球</span></span><br><span class="line"><span class="keyword">var</span> ball = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">SphereGeometry</span>(<span class="number">1</span>, <span class="number">32</span>, <span class="number">32</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 平面</span></span><br><span class="line"><span class="keyword">var</span> plane = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">PlaneGeometry</span>(<span class="number">10</span>, <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 柱子</span></span><br><span class="line"><span class="keyword">var</span> cylinder = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">CylinderGeometry</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">32</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="材质-Material"><a href="#材质-Material" class="headerlink" title="材质(Material)"></a>材质(Material)</h3><p>材质决定物体长啥样。不同的材质对光线的反应不一样：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 基础材质 - 不管光线咋样，就这个颜色</span></span><br><span class="line"><span class="keyword">var</span> basic = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">MeshBasicMaterial</span>(&#123; <span class="attr">color</span>: <span class="number">0xff0000</span> &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Lambert材质 - 有光影，但不反光</span></span><br><span class="line"><span class="keyword">var</span> lambert = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">MeshLambertMaterial</span>(&#123; <span class="attr">color</span>: <span class="number">0x00ff00</span> &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Phong材质 - 会反光，看起来更真实</span></span><br><span class="line"><span class="keyword">var</span> phong = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">MeshPhongMaterial</span>(&#123;</span><br><span class="line">  <span class="attr">color</span>: <span class="number">0x0000ff</span>,</span><br><span class="line">  <span class="attr">shininess</span>: <span class="number">100</span>, <span class="comment">// 反光度</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>材质还可以加各种属性：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> material = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">MeshPhongMaterial</span>(&#123;</span><br><span class="line">  <span class="attr">color</span>: <span class="number">0xffffff</span>, <span class="comment">// 颜色</span></span><br><span class="line">  <span class="attr">transparent</span>: <span class="literal">true</span>, <span class="comment">// 透明不透明</span></span><br><span class="line">  <span class="attr">opacity</span>: <span class="number">0.8</span>, <span class="comment">// 透明度</span></span><br><span class="line">  <span class="attr">wireframe</span>: <span class="literal">false</span>, <span class="comment">// 是不是就显示线框</span></span><br><span class="line">  <span class="attr">map</span>: texture, <span class="comment">// 贴图</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="光线-让-3D-看起来更立体的秘密"><a href="#光线-让-3D-看起来更立体的秘密" class="headerlink" title="光线 - 让 3D 看起来更立体的秘密"></a>光线 - 让 3D 看起来更立体的秘密</h2><p>想让物体看起来有立体感，就得加光。Three.js 有好几种光源：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 环境光 - 均匀地照亮一切</span></span><br><span class="line"><span class="keyword">var</span> ambientLight = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">AmbientLight</span>(<span class="number">0x404040</span>, <span class="number">0.6</span>);</span><br><span class="line">scene.<span class="title function_">add</span>(ambientLight);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 点光源 - 从一个点往四面八方发光</span></span><br><span class="line"><span class="keyword">var</span> pointLight = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">PointLight</span>(<span class="number">0xffffff</span>, <span class="number">1</span>, <span class="number">100</span>);</span><br><span class="line">pointLight.<span class="property">position</span>.<span class="title function_">set</span>(<span class="number">10</span>, <span class="number">10</span>, <span class="number">10</span>);</span><br><span class="line">scene.<span class="title function_">add</span>(pointLight);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方向光 - 模拟太阳光，平行射过来</span></span><br><span class="line"><span class="keyword">var</span> directionalLight = <span class="keyword">new</span> <span class="variable constant_">THREE</span>.<span class="title class_">DirectionalLight</span>(<span class="number">0xffffff</span>, <span class="number">0.8</span>);</span><br><span class="line">directionalLight.<span class="property">position</span>.<span class="title function_">set</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">scene.<span class="title function_">add</span>(directionalLight);</span><br></pre></td></tr></table></figure>
+
+<h2 id="坐标、移动、旋转操作"><a href="#坐标、移动、旋转操作" class="headerlink" title="坐标、移动、旋转操作"></a>坐标、移动、旋转操作</h2><p>Three.js 用的是右手坐标系：</p>
+<ul>
+<li>X 轴：往右走</li>
+<li>Y 轴：往上走</li>
+<li>Z 轴：往屏幕外面走</li>
+</ul>
+<h3 id="位置-Position"><a href="#位置-Position" class="headerlink" title="位置(Position)"></a>位置(Position)</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mesh.<span class="property">position</span>.<span class="title function_">set</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>); <span class="comment">// 直接放这儿</span></span><br><span class="line">mesh.<span class="property">position</span>.<span class="property">x</span> += <span class="number">1</span>; <span class="comment">// 往右移一点</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="旋转-Rotation"><a href="#旋转-Rotation" class="headerlink" title="旋转(Rotation)"></a>旋转(Rotation)</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mesh.<span class="property">rotation</span>.<span class="title function_">set</span>(<span class="number">0</span>, <span class="title class_">Math</span>.<span class="property">PI</span> / <span class="number">2</span>, <span class="number">0</span>); <span class="comment">// 转个角度</span></span><br><span class="line">mesh.<span class="property">rotation</span>.<span class="property">y</span> += <span class="number">0.01</span>; <span class="comment">// 慢慢转</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="缩放-Scale"><a href="#缩放-Scale" class="headerlink" title="缩放(Scale)"></a>缩放(Scale)</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mesh.<span class="property">scale</span>.<span class="title function_">set</span>(<span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>); <span class="comment">// 拉长</span></span><br><span class="line">mesh.<span class="property">scale</span>.<span class="property">x</span> = <span class="number">0.5</span>; <span class="comment">// 压扁</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="适配不同屏幕"><a href="#适配不同屏幕" class="headerlink" title="适配不同屏幕"></a>适配不同屏幕</h2><p>想让你的 3D 场景在手机上也好看，得处理窗口大小变化：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">onWindowResize</span>(<span class="params"></span>) &#123;</span><br><span class="line">  camera.<span class="property">aspect</span> = <span class="variable language_">window</span>.<span class="property">innerWidth</span> / <span class="variable language_">window</span>.<span class="property">innerHeight</span>;</span><br><span class="line">  camera.<span class="title function_">updateProjectionMatrix</span>();</span><br><span class="line">  renderer.<span class="title function_">setSize</span>(<span class="variable language_">window</span>.<span class="property">innerWidth</span>, <span class="variable language_">window</span>.<span class="property">innerHeight</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&quot;resize&quot;</span>, onWindowResize, <span class="literal">false</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>折腾了半天，终于把 Three.js 的基础搞明白了。总结一下学到了啥：</p>
+<ol>
+<li><strong>三大件</strong> - 场景、相机、渲染器，缺一不可</li>
+<li><strong>形状+材质</strong> - 几何体加材料才是个完整的物体</li>
+<li><strong>光线很重要</strong> - 上帝说，要有光</li>
+<li><strong>动起来才好玩</strong> - 动画让静态的 3D 变活了</li>
+</ol>
+<p>现在回头看第二篇的地球绘制，应该会轻松很多。毕竟基础打好了，后面就是各种高级技巧的叠加。下次来画个会转的地球！</p>
+<h2 id="学习资源"><a href="#学习资源" class="headerlink" title="学习资源"></a>学习资源</h2><ul>
+<li><a href="https://threejs.org/docs/">Three.js 官方文档</a> - 英文不错的话</li>
+<li><a href="https://threejs.org/examples/">Three.js 示例</a> - 各种效果都有</li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/WebGL_API">WebGL 基础</a> - 深入了解底层</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="https://github.com/apriljii">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Three-js-%E5%88%B0%E5%BA%95%E6%98%AF%E5%95%A5"><span class="toc-number">2.</span> <span class="toc-text">Three.js 到底是啥</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF-Scene"><span class="toc-number">2.1.</span> <span class="toc-text">场景(Scene)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E6%9C%BA-Camera"><span class="toc-number">2.2.</span> <span class="toc-text">相机(Camera)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%B2%E6%9F%93%E5%99%A8-Renderer"><span class="toc-number">2.3.</span> <span class="toc-text">渲染器(Renderer)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%89%8B%E8%AF%95%E8%AF%95-%E8%BD%AC%E4%B8%AA%E7%AB%8B%E6%96%B9%E4%BD%93"><span class="toc-number">3.</span> <span class="toc-text">动手试试 - 转个立方体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BD%A2%E7%8A%B6%E5%92%8C%E6%9D%90%E8%B4%A8"><span class="toc-number">4.</span> <span class="toc-text">形状和材质</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%84%E7%A7%8D%E5%BD%A2%E7%8A%B6-Geometry"><span class="toc-number">4.1.</span> <span class="toc-text">各种形状(Geometry)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9D%90%E8%B4%A8-Material"><span class="toc-number">4.2.</span> <span class="toc-text">材质(Material)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%89%E7%BA%BF-%E8%AE%A9-3D-%E7%9C%8B%E8%B5%B7%E6%9D%A5%E6%9B%B4%E7%AB%8B%E4%BD%93%E7%9A%84%E7%A7%98%E5%AF%86"><span class="toc-number">5.</span> <span class="toc-text">光线 - 让 3D 看起来更立体的秘密</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9D%90%E6%A0%87%E3%80%81%E7%A7%BB%E5%8A%A8%E3%80%81%E6%97%8B%E8%BD%AC%E6%93%8D%E4%BD%9C"><span class="toc-number">6.</span> <span class="toc-text">坐标、移动、旋转操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E7%BD%AE-Position"><span class="toc-number">6.1.</span> <span class="toc-text">位置(Position)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%8B%E8%BD%AC-Rotation"><span class="toc-number">6.2.</span> <span class="toc-text">旋转(Rotation)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%A9%E6%94%BE-Scale"><span class="toc-number">6.3.</span> <span class="toc-text">缩放(Scale)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%82%E9%85%8D%E4%B8%8D%E5%90%8C%E5%B1%8F%E5%B9%95"><span class="toc-number">7.</span> <span class="toc-text">适配不同屏幕</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">8.</span> <span class="toc-text">写在最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%BA%90"><span class="toc-number">9.</span> <span class="toc-text">学习资源</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&text=Three.js学习(1)-基础入门"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&title=Three.js学习(1)-基础入门"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&is_video=false&description=Three.js学习(1)-基础入门"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Three.js学习(1)-基础入门&body=Check out this article: https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&title=Three.js学习(1)-基础入门"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&title=Three.js学习(1)-基础入门"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&title=Three.js学习(1)-基础入门"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&title=Three.js学习(1)-基础入门"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&name=Three.js学习(1)-基础入门&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2019/06/24/Three-js%E5%AD%A6%E4%B9%A0-1-%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/&t=Three.js学习(1)-基础入门"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    April Ji
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

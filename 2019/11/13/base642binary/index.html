@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang=ch>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="JS解析字符串为二进制数12345678let str &#x3D; &#x27;ABCD&#x27;;let result &#x3D; null;for(let i &#x3D; 0; i &lt; str.length; i ++ ) &#123;    result +&#x3D; str.charCodeAt(i).toString(2);&#125;console.log(result);  二进制转Base64123456">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS实现base64与二进制的互相转换">
+<meta property="og:url" content="https://apriljii.github.io/2019/11/13/base642binary/index.html">
+<meta property="og:site_name" content="April">
+<meta property="og:description" content="JS解析字符串为二进制数12345678let str &#x3D; &#x27;ABCD&#x27;;let result &#x3D; null;for(let i &#x3D; 0; i &lt; str.length; i ++ ) &#123;    result +&#x3D; str.charCodeAt(i).toString(2);&#125;console.log(result);  二进制转Base64123456">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-11-13T03:23:16.000Z">
+<meta property="article:modified_time" content="2026-01-12T07:55:11.536Z">
+<meta property="article:author" content="April Ji">
+<meta property="article:tag" content="base64">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>JS实现base64与二进制的互相转换</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+	<!-- mermaid -->
+	<script src='https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js'></script>
+	<script>
+		mermaid.initialize({
+			startOnLoad: true,
+			theme: 'dark',
+			securityLevel: 'loose'
+		});
+	</script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2019/12/12/frontend-performance-test/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2019/07/05/%E7%90%86%E8%A7%A3Chrome-V8%E4%B8%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%A4%A7%E5%B0%8F/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2019/11/13/base642binary/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2019/11/13/base642binary/&text=JS实现base64与二进制的互相转换"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2019/11/13/base642binary/&title=JS实现base64与二进制的互相转换"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2019/11/13/base642binary/&is_video=false&description=JS实现base64与二进制的互相转换"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=JS实现base64与二进制的互相转换&body=Check out this article: https://apriljii.github.io/2019/11/13/base642binary/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2019/11/13/base642binary/&title=JS实现base64与二进制的互相转换"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2019/11/13/base642binary/&title=JS实现base64与二进制的互相转换"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2019/11/13/base642binary/&title=JS实现base64与二进制的互相转换"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2019/11/13/base642binary/&title=JS实现base64与二进制的互相转换"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2019/11/13/base642binary/&name=JS实现base64与二进制的互相转换&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2019/11/13/base642binary/&t=JS实现base64与二进制的互相转换"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc-container">
+        <div id="toc-toggle" class="toc-toggle-btn">
+          <i class="fa-solid fa-list"></i>
+          <span>Table of Contents</span>
+        </div>
+        <div id="toc" style="display: none;">
+          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JS%E8%A7%A3%E6%9E%90%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%BA%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0"><span class="toc-number">1.</span> <span class="toc-text">JS解析字符串为二进制数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%ACBase64"><span class="toc-number">2.</span> <span class="toc-text">二进制转Base64</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E8%BD%ACbase64"><span class="toc-number">3.</span> <span class="toc-text">字符串转base64</span></a></li></ol>
+        </div>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        JS实现base64与二进制的互相转换
+    </h1>
+    
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">April Ji</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-11-13T03:23:16.000Z" class="dt-published" itemprop="datePublished">2019-11-13</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/base64/" rel="tag">base64</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="JS解析字符串为二进制数"><a href="#JS解析字符串为二进制数" class="headerlink" title="JS解析字符串为二进制数"></a>JS解析字符串为二进制数</h1><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> str = <span class="string">&#x27;ABCD&#x27;</span>;</span><br><span class="line"><span class="keyword">let</span> result = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; str.<span class="property">length</span>; i ++ ) &#123;</span><br><span class="line">    result += str.<span class="title function_">charCodeAt</span>(i).<span class="title function_">toString</span>(<span class="number">2</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(result);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="二进制转Base64"><a href="#二进制转Base64" class="headerlink" title="二进制转Base64"></a>二进制转Base64</h1><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">binaryTobase64</span>(<span class="params">code</span>) &#123;</span><br><span class="line">  <span class="keyword">let</span> base64Code = <span class="string">&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/&quot;</span>;</span><br><span class="line">  <span class="keyword">let</span> res = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  <span class="comment">// 1 bytes = 8bit，6bit 位替换成一个 base64 字符</span></span><br><span class="line">  <span class="comment">// 所以每 3 bytes 的数据，能成功替换成 4 个 base64 字符</span></span><br><span class="line">    </span><br><span class="line">  <span class="comment">// 对不足 24 bit (也就是 3 bytes) 的情况进行特殊处理</span></span><br><span class="line">  <span class="keyword">if</span> (code.<span class="property">length</span> % <span class="number">24</span> === <span class="number">8</span>) &#123;</span><br><span class="line">    code += <span class="string">&#x27;0000&#x27;</span>;</span><br><span class="line">    res += <span class="string">&#x27;==&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (code.<span class="property">length</span> % <span class="number">24</span> === <span class="number">16</span>) &#123;</span><br><span class="line">    code += <span class="string">&#x27;00&#x27;</span>;</span><br><span class="line">    res += <span class="string">&#x27;=&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> encode = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  <span class="comment">// code 按 6bit 一组，转换为</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; code.<span class="property">length</span>; i += <span class="number">6</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> item = code.<span class="title function_">slice</span>(i, i + <span class="number">6</span>);</span><br><span class="line">    encode += base64Code[<span class="built_in">parseInt</span>(item, <span class="number">2</span>)];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> encode + res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="字符串转base64"><a href="#字符串转base64" class="headerlink" title="字符串转base64"></a>字符串转base64</h1><p>版本比较新的浏览器可以支持：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> encodedData = <span class="variable language_">window</span>.<span class="title function_">btoa</span>(<span class="string">&quot;this is a example&quot;</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(encodedData); <span class="comment">// dGhpcyBpcyBhIGV4YW1wbGU=</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> decodeData = <span class="variable language_">window</span>.<span class="title function_">atob</span>(encodedData);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(decodeData); <span class="comment">// this is a example</span></span><br></pre></td></tr></table></figure>
+<p>如果没有btoa及atob函数，需要自己手写实现了：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">base64encode</span>(<span class="params">text</span>) &#123;</span><br><span class="line">  <span class="keyword">let</span> base64Code = <span class="string">&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=&quot;</span>;</span><br><span class="line">  <span class="keyword">let</span> res = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  <span class="keyword">let</span> i = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">while</span> (i &lt; text.<span class="property">length</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> char1, char2, char3, enc1, enc2, enc3, enc4;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 三个字符一组，转二进制</span></span><br><span class="line">    char1 = text.<span class="title function_">charCodeAt</span>(i++); </span><br><span class="line">    char2 = text.<span class="title function_">charCodeAt</span>(i++);</span><br><span class="line">    char3 = text.<span class="title function_">charCodeAt</span>(i++);</span><br><span class="line"></span><br><span class="line">    enc1 = char1 &gt;&gt; <span class="number">2</span>; <span class="comment">// 取第 1 字节的前 6 位</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 三个一组处理</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">isNaN</span>(char2)) &#123;</span><br><span class="line">      <span class="comment">// 只有 1 字节的时候</span></span><br><span class="line">      enc2 = ((char1 &amp; <span class="number">3</span>) &lt;&lt; <span class="number">4</span>) | (<span class="number">0</span> &gt;&gt; <span class="number">4</span>);</span><br><span class="line">      <span class="comment">// 第65个字符用来代替补位的 = 号</span></span><br><span class="line">      enc3 = enc4 = <span class="number">64</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">isNaN</span>(char3)) &#123;</span><br><span class="line">      <span class="comment">// 只有 2 字节的时候</span></span><br><span class="line">      enc2 = ((char1 &amp; <span class="number">3</span>) &lt;&lt; <span class="number">4</span>) | (char2 &gt;&gt; <span class="number">4</span>);</span><br><span class="line">      enc3 = ((char2 &amp; <span class="number">15</span>) &lt;&lt; <span class="number">2</span>) | (<span class="number">0</span> &gt;&gt; <span class="number">6</span>);</span><br><span class="line">      enc4 = <span class="number">64</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      enc2 = ((char1 &amp; <span class="number">3</span>) &lt;&lt; <span class="number">4</span>) | (char2 &gt;&gt; <span class="number">4</span>); <span class="comment">// 取第 1 个字节的后 2 位(3 = 11 &lt;&lt; 4 = 110000) + 第 2 个字节的前 4 位</span></span><br><span class="line">      enc3 = ((char2 &amp; <span class="number">15</span>) &lt;&lt; <span class="number">2</span>) | (char3 &gt;&gt; <span class="number">6</span>); <span class="comment">// 取第 2 个字节的后 4 位 (15 = 1111 &lt;&lt; 2 = 111100) + 第 3 个字节的前 2 位</span></span><br><span class="line">      enc4 = char3 &amp; <span class="number">63</span>; <span class="comment">// 取最后一个字节的最后 6 位 (63 = 111111)</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 转base64</span></span><br><span class="line">    res += base64Code.<span class="title function_">charAt</span>(enc1) + base64Code.<span class="title function_">charAt</span>(enc2) + base64Code.<span class="title function_">charAt</span>(enc3) + base64Code.<span class="title function_">charAt</span>(enc4)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="https://github.com/apriljii">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JS%E8%A7%A3%E6%9E%90%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%BA%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0"><span class="toc-number">1.</span> <span class="toc-text">JS解析字符串为二进制数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%ACBase64"><span class="toc-number">2.</span> <span class="toc-text">二进制转Base64</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E8%BD%ACbase64"><span class="toc-number">3.</span> <span class="toc-text">字符串转base64</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2019/11/13/base642binary/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2019/11/13/base642binary/&text=JS实现base64与二进制的互相转换"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2019/11/13/base642binary/&title=JS实现base64与二进制的互相转换"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2019/11/13/base642binary/&is_video=false&description=JS实现base64与二进制的互相转换"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=JS实现base64与二进制的互相转换&body=Check out this article: https://apriljii.github.io/2019/11/13/base642binary/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2019/11/13/base642binary/&title=JS实现base64与二进制的互相转换"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2019/11/13/base642binary/&title=JS实现base64与二进制的互相转换"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2019/11/13/base642binary/&title=JS实现base64与二进制的互相转换"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2019/11/13/base642binary/&title=JS实现base64与二进制的互相转换"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2019/11/13/base642binary/&name=JS实现base64与二进制的互相转换&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2019/11/13/base642binary/&t=JS实现base64与二进制的互相转换"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    April Ji
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

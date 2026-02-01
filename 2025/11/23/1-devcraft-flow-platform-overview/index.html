@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang=ch>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="本文介绍 UniCraft 平台的整体架构和设计理念，基于已有的组件库、设计系统、低代码平台等实现，探讨如何通过规范注入实现产研一体化。  前言UniCraft 是一个产研一体化的需求转码工作流平台，已完成初步设计，目前还在开发阶段，目标是通过三大核心模块和相关规范注入，打通从产品-&gt;设计-&gt;研发 -&gt;AI 代码落地的完整工作流。目标是后期打通更多的高频金融科技领域业务场景，实">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览">
+<meta property="og:url" content="https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/index.html">
+<meta property="og:site_name" content="April">
+<meta property="og:description" content="本文介绍 UniCraft 平台的整体架构和设计理念，基于已有的组件库、设计系统、低代码平台等实现，探讨如何通过规范注入实现产研一体化。  前言UniCraft 是一个产研一体化的需求转码工作流平台，已完成初步设计，目前还在开发阶段，目标是通过三大核心模块和相关规范注入，打通从产品-&gt;设计-&gt;研发 -&gt;AI 代码落地的完整工作流。目标是后期打通更多的高频金融科技领域业务场景，实">
+<meta property="og:locale">
+<meta property="og:image" content="https://apriljii.github.io/img/1-devcraft-flow-platform-overview/download-list.png">
+<meta property="og:image" content="https://apriljii.github.io/img/prd2code-comparison/tongyilingma-demo-1.png">
+<meta property="og:image" content="https://apriljii.github.io/img/prd2code-comparison/prd2code-demo-1.png">
+<meta property="og:image" content="https://apriljii.github.io/img/prd2code-comparison/tongyilingma-demo-2.png">
+<meta property="og:image" content="https://apriljii.github.io/img/prd2code-comparison/prd2code-demo-2.png">
+<meta property="article:published_time" content="2025-11-23T11:25:12.000Z">
+<meta property="article:modified_time" content="2026-02-01T07:27:37.925Z">
+<meta property="article:author" content="April Ji">
+<meta property="article:tag" content="Vue.js">
+<meta property="article:tag" content="Element UI">
+<meta property="article:tag" content="组件库">
+<meta property="article:tag" content="前端架构">
+<meta property="article:tag" content="金融科技">
+<meta property="article:tag" content="设计系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://apriljii.github.io/img/1-devcraft-flow-platform-overview/download-list.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+	<!-- mermaid -->
+	<script src='https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js'></script>
+	<script>
+		mermaid.initialize({
+			startOnLoad: true,
+			theme: 'dark',
+			securityLevel: 'loose'
+		});
+	</script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2025/11/23/2-code-generator-core-principles/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/06/17/03-design-system-engineering/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&text=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&title=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&is_video=false&description=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览&body=Check out this article: https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&title=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&title=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&title=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&title=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&name=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&t=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc-container">
+        <div id="toc-toggle" class="toc-toggle-btn">
+          <i class="fa-solid fa-list"></i>
+          <span>Table of Contents</span>
+        </div>
+        <div id="toc" style="display: none;">
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E6%AD%A5%E5%AE%9E%E7%8E%B0%E7%9A%84Demo"><span class="toc-number">2.</span> <span class="toc-text">初步实现的Demo</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8E%AC-UniCraft-%E7%AC%AC%E4%B8%80%E7%89%88Demo%E5%8A%9F%E8%83%BD%E6%BC%94%E7%A4%BA"><span class="toc-number">2.1.</span> <span class="toc-text">🎬 UniCraft 第一版Demo功能演示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%9A%80-AI%E8%BD%AC%E7%A0%81%E5%B9%B3%E5%8F%B0MVP%E9%AA%8C%E8%AF%81"><span class="toc-number">2.2.</span> <span class="toc-text">🚀 AI转码平台MVP验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%8A-UniCraft-vs-%E9%80%9A%E4%B9%89%E7%81%B5%E7%A0%81-AI%E8%BD%AC%E7%A0%81%E8%83%BD%E5%8A%9B%E5%AF%B9%E6%AF%94"><span class="toc-number">2.3.</span> <span class="toc-text">📊 UniCraft vs 通义灵码 AI转码能力对比</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%B9%E6%AF%94%E4%B8%80%EF%BC%9A%E5%88%86%E7%BB%84%E8%A1%A8%E5%8D%95%E7%94%9F%E6%88%90%E8%83%BD%E5%8A%9B"><span class="toc-number">2.3.1.</span> <span class="toc-text">对比一：分组表单生成能力</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%B9%E6%AF%94%E4%BA%8C%EF%BC%9A%E5%88%86%E6%AD%A5%E8%A1%A8%E5%8D%95%E7%94%9F%E6%88%90%E8%83%BD%E5%8A%9B"><span class="toc-number">2.3.2.</span> <span class="toc-text">对比二：分步表单生成能力</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84%E6%80%BB%E8%A7%88"><span class="toc-number">3.</span> <span class="toc-text">平台架构总览</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%B6%E6%9E%84%E5%9B%BE%E8%AF%B4%E6%98%8E"><span class="toc-number">3.1.</span> <span class="toc-text">架构图说明</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%B9%B3%E5%8F%B0%E5%AE%9A%E4%BD%8D%E5%92%8C%E6%A0%B8%E5%BF%83%E9%97%AE%E9%A2%98"><span class="toc-number">4.</span> <span class="toc-text">一、平台定位和核心问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">4.1.</span> <span class="toc-text">1.1 遇到的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E8%AE%BE%E6%83%B3"><span class="toc-number">4.2.</span> <span class="toc-text">1.2 解决方案设想</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81MS-UI-System-%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83%E6%B3%A8%E5%85%A5%EF%BC%88%E5%B7%B2%E5%AE%9E%E7%8E%B0%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">二、MS UI System - 设计规范注入（已实现）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E8%AE%BE%E8%AE%A1-Token-%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">5.1.</span> <span class="toc-text">2.1 设计 Token 系统的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%8E%A8-Token-%E5%B1%82%EF%BC%9A%E5%9F%BA%E7%A1%80%E9%A2%9C%E8%89%B2%E7%B3%BB%E7%BB%9F"><span class="toc-number">5.1.1.</span> <span class="toc-text">🎨 Token 层：基础颜色系统</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%8E%AF-%E8%AF%AD%E4%B9%89%E5%8C%96%E5%8F%98%E9%87%8F%E5%B1%82%EF%BC%9A%E8%AE%BE%E8%AE%A1%E6%84%8F%E5%9B%BE%E8%A1%A8%E8%BE%BE"><span class="toc-number">5.1.2.</span> <span class="toc-text">🎯 语义化变量层：设计意图表达</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%9B%A0%EF%B8%8F-%E6%A1%86%E6%9E%B6%E5%B1%82%E9%85%8D%E7%BD%AE%EF%BC%9A%E5%A4%9A%E6%A1%86%E6%9E%B6%E9%9B%86%E6%88%90"><span class="toc-number">5.1.3.</span> <span class="toc-text">🛠️ 框架层配置：多框架集成</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%93%90-Figma-%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83%E5%90%8C%E6%AD%A5"><span class="toc-number">5.1.4.</span> <span class="toc-text">📐 Figma 设计规范同步</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-number">5.2.</span> <span class="toc-text">2.2 设计规范的工作流</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E7%BB%84%E4%BB%B6%E5%BA%93-%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83%E6%B3%A8%E5%85%A5%EF%BC%88%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83%E5%BE%85%E6%B3%A8%E5%85%A5%EF%BC%89"><span class="toc-number">6.</span> <span class="toc-text">三、组件库 - 代码规范注入（代码规范待注入）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E7%BB%84%E4%BB%B6%E5%BA%93%E7%9A%84%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-number">6.1.</span> <span class="toc-text">3.1 组件库的架构设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83%E7%9A%84%E6%B3%A8%E5%85%A5"><span class="toc-number">6.2.</span> <span class="toc-text">3.2 开发规范的注入</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81AI-%E8%BD%AC%E7%A0%81%E5%B9%B3%E5%8F%B0-%E6%99%BA%E8%83%BD%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%EF%BC%88%E6%97%A9%E6%9C%9F%E5%AE%9E%E7%8E%B0%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">四、AI 转码平台 - 智能代码生成（早期实现）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%BD%93%E5%89%8D%E7%8A%B6%E6%80%81"><span class="toc-number">7.1.</span> <span class="toc-text">4.1 当前状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E8%AE%A1%E5%88%92%E4%B8%AD%E7%9A%84%E5%8A%9F%E8%83%BD"><span class="toc-number">7.2.</span> <span class="toc-text">4.2 计划中的功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-AI-%E5%AF%B9%E5%BC%80%E5%8F%91%E6%A8%A1%E5%BC%8F%E7%9A%84%E9%A2%A0%E8%A6%86%E6%80%A7%E5%BD%B1%E5%93%8D"><span class="toc-number">7.3.</span> <span class="toc-text">4.3 AI 对开发模式的颠覆性影响</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E4%B8%89%E5%A4%A7%E6%A8%A1%E5%9D%97%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%9C%BA%E5%88%B6"><span class="toc-number">8.</span> <span class="toc-text">五、三大模块的协作机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%BD%93%E5%89%8D%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%96%B9%E5%BC%8F"><span class="toc-number">8.1.</span> <span class="toc-text">5.1 当前的协作方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E8%84%91%E6%B4%9E%E5%A4%A7%E5%BC%80%E7%9A%84%E6%B7%B1%E5%BA%A6%E9%9B%86%E6%88%90"><span class="toc-number">8.2.</span> <span class="toc-text">5.2 脑洞大开的深度集成</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%B9%B3%E5%8F%B0%E4%BB%B7%E5%80%BC%E5%92%8C%E6%8C%91%E6%88%98"><span class="toc-number">9.</span> <span class="toc-text">六、平台价值和挑战</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E5%B7%B2%E7%BB%8F%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%94%B6%E7%9B%8A"><span class="toc-number">9.1.</span> <span class="toc-text">6.1 已经实现的收益</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E9%9D%A2%E5%AF%B9%E7%9A%84%E6%8C%91%E6%88%98"><span class="toc-number">9.2.</span> <span class="toc-text">6.2 面对的挑战</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">七、总结</span></a></li></ol>
+        </div>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览
+    </h1>
+    
+    <p class="post-subtitle">统一 Schema，规范即代码</p>
+    
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">April Ji</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-11-23T11:25:12.000Z" class="dt-published" itemprop="datePublished">2025-11-23</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/">前端开发</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Element-UI/" rel="tag">Element UI</a>, <a class="p-category" href="/tags/Vue-js/" rel="tag">Vue.js</a>, <a class="p-category" href="/tags/%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84/" rel="tag">前端架构</a>, <a class="p-category" href="/tags/%E7%BB%84%E4%BB%B6%E5%BA%93/" rel="tag">组件库</a>, <a class="p-category" href="/tags/%E8%AE%BE%E8%AE%A1%E7%B3%BB%E7%BB%9F/" rel="tag">设计系统</a>, <a class="p-category" href="/tags/%E9%87%91%E8%9E%8D%E7%A7%91%E6%8A%80/" rel="tag">金融科技</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <blockquote>
+<p>本文介绍 UniCraft 平台的整体架构和设计理念，基于已有的组件库、设计系统、低代码平台等实现，探讨如何通过规范注入实现产研一体化。</p>
+</blockquote>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>UniCraft 是一个产研一体化的需求转码工作流平台，已完成初步设计，目前还在开发阶段，目标是通过三大核心模块和相关规范注入，打通从产品-&gt;设计-&gt;研发 -&gt;AI 代码落地的完整工作流。目标是后期打通更多的高频金融科技领域业务场景，实现更快的区块和页面级开发（当前仍受限于模型选择和能力限制，暂时支持组件级）。</p>
+<p>目前已实现的核心模块：</p>
+<ul>
+<li>MS UI System（UI 设计系统）</li>
+<li>组件库（Vue 2 企业级组件库，组件填充中；Vue3 已完成项目搭建，待填充）</li>
+<li>低代码平台（Schema 驱动的组件生成）</li>
+</ul>
+<h2 id="初步实现的Demo"><a href="#初步实现的Demo" class="headerlink" title="初步实现的Demo"></a>初步实现的Demo</h2><h3 id="🎬-UniCraft-第一版Demo功能演示"><a href="#🎬-UniCraft-第一版Demo功能演示" class="headerlink" title="🎬 UniCraft 第一版Demo功能演示"></a>🎬 UniCraft 第一版Demo功能演示</h3><p>以下是 UniCraft 平台的实际运行效果演示，展示了从产品需求描述到组件代码生成的完整工作流，还在雏形状态，后续会持续进化。</p>
+<video controls width="100%" poster="">
+  <source src="/videos/demo-video.mp4" type="video/mp4">
+  您的浏览器不支持 video 标签。
+</video>
+
+<p><strong>视频说明：</strong></p>
+<ul>
+<li>🎯 <strong>工具概述</strong>：展示了 UniCraft 平台的界面和主要功能模块</li>
+<li>🔄 <strong>工作流演示</strong>：演示了从自然语言需求到 Schema 生成，再到代码输出的完整流程</li>
+<li>⚡ <strong>速度优化</strong>：视频经过智能压缩和速度调整处理，确保流畅播放体验</li>
+<li>📱 <strong>响应式设计</strong>：平台支持多种设备和屏幕尺寸的自适应布局</li>
+</ul>
+<h3 id="🚀-AI转码平台MVP验证"><a href="#🚀-AI转码平台MVP验证" class="headerlink" title="🚀 AI转码平台MVP验证"></a>🚀 AI转码平台MVP验证</h3><p><img src="/img/1-devcraft-flow-platform-overview/download-list.png" alt="AI转码平台MVP - 下载列表组件代码生成"></p>
+<p><strong>说明</strong>：UniCraft AI转码平台的最小MVP验证，通过自然语言需求描述，自动生成符合规范的下载列表组件 Vue 代码。目前该功能已在公司内部系统上线应用，验证了从需求到代码生成的完整工作流可行性。</p>
+<h3 id="📊-UniCraft-vs-通义灵码-AI转码能力对比"><a href="#📊-UniCraft-vs-通义灵码-AI转码能力对比" class="headerlink" title="📊 UniCraft vs 通义灵码 AI转码能力对比"></a>📊 UniCraft vs 通义灵码 AI转码能力对比</h3><p>以下对比展示了 UniCraft AI转码平台与通义灵码在处理相同产品需求时的表现差异：</p>
+<h4 id="对比一：分组表单生成能力"><a href="#对比一：分组表单生成能力" class="headerlink" title="对比一：分组表单生成能力"></a>对比一：分组表单生成能力</h4><table>
+<thead>
+<tr>
+<th align="center">通义灵码（错误）</th>
+<th align="center">UniCraft AI（正确）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><img src="/img/prd2code-comparison/tongyilingma-demo-1.png" alt="通义灵码 - 错误使用Steps组件"></td>
+<td align="center"><img src="/img/prd2code-comparison/prd2code-demo-1.png" alt="UniCraft - 正确生成分组表单"></td>
+</tr>
+</tbody></table>
+<p><strong>说明</strong>：需求中明确要求生成一个<strong>分组表单</strong>，但通义灵码错误地使用了 Element 的 Steps 步骤组件，而且表单项并无校验。UniCraft AI 转码平台准确理解了需求，生成正确的分组表单结构。</p>
+<h4 id="对比二：分步表单生成能力"><a href="#对比二：分步表单生成能力" class="headerlink" title="对比二：分步表单生成能力"></a>对比二：分步表单生成能力</h4><table>
+<thead>
+<tr>
+<th align="center">通义灵码（错误）</th>
+<th align="center">UniCraft AI（正确）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><img src="/img/prd2code-comparison/tongyilingma-demo-2.png" alt="通义灵码 - 错误使用Steps组件"></td>
+<td align="center"><img src="/img/prd2code-comparison/prd2code-demo-2.png" alt="UniCraft - 正确生成分步表单"></td>
+</tr>
+</tbody></table>
+<p><strong>说明</strong>：需求中明确要求实现一个<strong>分步表单</strong>，但通义灵码仍然直接使用了 Element 的 Steps 步骤组件，无法生成真正的分步表单逻辑。UniCraft AI 转码平台准确实现了分步表单功能。</p>
+<blockquote>
+<p><strong>总结</strong>：UniCraft AI 转码平台通过深度结合 Schema 规范和Few-Shot示例库，能够准确理解产品需求并生成符合规范的组件代码，在复杂表单场景下表现优于通用 AI 编程工具。</p>
+</blockquote>
+<h2 id="平台架构总览"><a href="#平台架构总览" class="headerlink" title="平台架构总览"></a>平台架构总览</h2><pre class="mermaid">flowchart TB
+    %% 定义颜色样式 - 线条更细
+    classDef userLayer fill:#e3f2fd,stroke:#1976d2,stroke-width:1px,color:#0d47a1
+    classDef coreLayer fill:#f3e5f5,stroke:#7b1fa2,stroke-width:1px,color:#4a148c
+    classDef infraLayer fill:#fff3e0,stroke:#f57c00,stroke-width:1px,color:#bf360c
+    classDef outputLayer fill:#e8f5e8,stroke:#2e7d32,stroke-width:1px,color:#1b5e20
+    classDef schemaCraft fill:#fce4ec,stroke:#c2185b,stroke-width:1px,color:#880e4f
+    classDef codeGen fill:#e8eaf6,stroke:#3f51b5,stroke-width:1px,color:#1a237e
+    classDef renderer fill:#e0f2f1,stroke:#00695c,stroke-width:1px,color:#004d40
+    classDef materials fill:#fff8e1,stroke:#f9a825,stroke-width:1px,color:#f57f17
+    classDef standards fill:#fce4ec,stroke:#ad1457,stroke-width:1px,color:#880e4f
+
+    %% 用户层
+    subgraph "用户层 (User Layer)"
+        PM["产品经理<br/>需求文档"]:::userLayer
+        DEV["前端开发<br/>代码编写"]:::userLayer
+        DESIGNER["设计师<br/>设计稿"]:::userLayer
+    end
+
+    %% 平台核心层 - 重新排列布局
+    subgraph "平台核心层 (Platform Core)"
+
+        %% 第一行：产品需求转Schema和UI物料库并排
+        subgraph "1. 产品需求转Schema"
+            SC_AGENT["schemaCraft智能体<br/>AI Agent"]:::schemaCraft
+            SC_PROMPT["提示词系统<br/>Prompts"]:::schemaCraft
+            SC_EXAMPLES["示例库<br/>Examples"]:::schemaCraft
+            SC_SPEC["Schema规范<br/>Specifications"]:::schemaCraft
+        end
+
+        subgraph "4. UI物料库"
+            ML_COMPONENTS["基础组件<br/>Components"]:::materials
+            ML_BLOCKS["区块<br/>Blocks"]:::materials
+            ML_TEMPLATES["页面模板<br/>Templates"]:::materials
+            ML_THEME["规范配置<br/>Themes & Tokens"]:::materials
+        end
+
+        %% UI物料库下方的Schema渲染器
+        subgraph "3. Schema渲染器"
+            SR_ENGINE["渲染引擎<br/>SchemaRenderer"]:::renderer
+            SR_REGISTRY["组件注册表<br/>ComponentRegistry"]:::renderer
+            SR_EVENTS["事件处理器<br/>EventHandler"]:::renderer
+            SR_CONTROLLER["组件控制器<br/>ComponentController"]:::renderer
+        end
+
+        %% 第二行：Schema代码生成器
+        subgraph "2. Schema代码生成器"
+            CG_TEMPLATE["模板生成器<br/>TemplateGenerator"]:::codeGen
+            CG_SCRIPT["脚本生成器<br/>ScriptGenerator"]:::codeGen
+            CG_STYLE["样式生成器<br/>StyleGenerator"]:::codeGen
+            CG_ASSEMBLER["SFC组装器<br/>SfcAssembler"]:::codeGen
+            CG_OPTIMIZER["代码优化器<br/>CodeOptimizer"]:::codeGen
+        end
+
+        %% 第三行：规范系统（居中）
+        subgraph "5. 规范系统"
+            STD_MANAGER["规范管理器<br/>StandardManager"]:::standards
+            STD_ADAPTERS["规范适配器<br/>Adapters"]:::standards
+            STD_CONFIG["规范配置<br/>StandardConfig"]:::standards
+            STD_VALIDATOR["规范验证器<br/>Validator"]:::standards
+        end
+    end
+
+    %% 支撑层
+    subgraph "支撑层 (Infrastructure)"
+        DATA_STORE["响应式数据管理器<br/>ReactiveDataStore"]:::infraLayer
+        ACTION_SYSTEM["动作执行系统<br/>ActionSystem"]:::infraLayer
+        DATA_BINDING["数据绑定系统<br/>DataBinding"]:::infraLayer
+        UTILS["工具库<br/>Utils"]:::infraLayer
+    end
+
+    %% 输出层
+    subgraph "输出层 (Output)"
+        subgraph "多框架代码生成"
+            VUE2_CODE["Vue 2组件<br/>.vue files"]:::outputLayer
+            VUE3_CODE["Vue 3组件<br/>.vue files"]:::outputLayer
+            REACT_CODE["React组件<br/>.tsx/.jsx files"]:::outputLayer
+        end
+
+        PREVIEW["实时预览<br/>Preview"]:::outputLayer
+        DOWNLOAD["代码下载<br/>Download"]:::outputLayer
+        INTEGRATION["项目集成<br/>Integration"]:::outputLayer
+    end
+
+    %% 工作流连接 - 直线连接
+    PM -.->|"产品需求"| SC_AGENT
+
+    SC_AGENT -.->|"转换Schema"| CG_TEMPLATE
+    SC_AGENT -.->|"转换Schema"| CG_SCRIPT
+    SC_AGENT -.->|"转换Schema"| CG_STYLE
+
+    CG_TEMPLATE -.->|"模板代码"| CG_ASSEMBLER
+    CG_SCRIPT -.->|"脚本代码"| CG_ASSEMBLER
+    CG_STYLE -.->|"样式代码"| CG_ASSEMBLER
+    CG_ASSEMBLER -.->|"组件代码"| CG_OPTIMIZER
+
+    CG_OPTIMIZER -.->|"待规范代码"| STD_MANAGER
+    STD_MANAGER -.->|"应用规范"| STD_ADAPTERS
+    STD_ADAPTERS -.->|"规范验证"| STD_VALIDATOR
+
+    SR_ENGINE -.->|"注册组件"| SR_REGISTRY
+    SR_ENGINE -.->|"处理事件"| SR_EVENTS
+    SR_ENGINE -.->|"生命周期管理"| SR_CONTROLLER
+
+    ML_COMPONENTS -.->|"基础组件"| SR_REGISTRY
+    ML_BLOCKS -.->|"区块"| SR_REGISTRY
+    ML_TEMPLATES -.->|"页面模板"| SR_REGISTRY
+    ML_THEME -.->|"主题配置"| STD_ADAPTERS
+
+    DATA_STORE -.->|"数据管理"| SR_ENGINE
+    ACTION_SYSTEM -.->|"动作执行"| SR_EVENTS
+    DATA_BINDING -.->|"数据绑定"| SR_ENGINE
+    UTILS -.->|"工具支持"| CG_ASSEMBLER
+
+    DEV -.->|"组件开发"| ML_COMPONENTS
+    DEV -.->|"区块开发"| ML_BLOCKS
+    DEV -.->|"模板开发"| ML_TEMPLATES
+    DEV -.->|"规范配置"| STD_CONFIG
+
+    STD_VALIDATOR -.->|"Vue 2代码"| VUE2_CODE
+    STD_VALIDATOR -.->|"Vue 3代码"| VUE3_CODE
+    STD_VALIDATOR -.->|"React代码"| REACT_CODE
+    SR_ENGINE -.->|"实时渲染"| PREVIEW
+    CG_OPTIMIZER -.->|"代码文件"| DOWNLOAD
+    VUE2_CODE -.->|"集成使用"| INTEGRATION
+    VUE3_CODE -.->|"集成使用"| INTEGRATION
+    REACT_CODE -.->|"集成使用"| INTEGRATION</pre>
+
+<h3 id="架构图说明"><a href="#架构图说明" class="headerlink" title="架构图说明"></a>架构图说明</h3><ul>
+<li><strong>用户层</strong>：产品经理、设计师、前端开发等角色作为系统输入</li>
+<li><strong>平台核心层</strong>：<ul>
+<li><strong>SchemaCraft</strong>：AI Agent将产品需求转换为标准化Schema</li>
+<li><strong>Schema代码生成器</strong>：生成Vue 2/3、React等多框架代码</li>
+<li><strong>Schema渲染器</strong>：实时渲染Schema为可交互UI界面</li>
+<li><strong>UI物料库</strong>：基础组件、区块、页面模板、规范配置</li>
+<li><strong>规范系统</strong>：确保代码符合公司编码规范</li>
+</ul>
+</li>
+<li><strong>支撑层</strong>：响应式数据管理、动作执行系统、数据绑定等基础设施</li>
+<li><strong>输出层</strong>：代码生成、实时预览、代码下载、项目集成</li>
+</ul>
+<p>下面整理一下整体的设计思路。</p>
+<h2 id="一、平台定位和核心问题"><a href="#一、平台定位和核心问题" class="headerlink" title="一、平台定位和核心问题"></a>一、平台定位和核心问题</h2><h3 id="1-1-遇到的问题"><a href="#1-1-遇到的问题" class="headerlink" title="1.1 遇到的问题"></a>1.1 遇到的问题</h3><p>在实际的项目开发中，相信都会碰到的问题：</p>
+<p>1.<strong>开发落地与产品需求有误差，经常返工</strong>：产品、设计、开发每个环节都缺乏标准化 → <strong>AI 效能提升</strong>：需求直接转成标准组件代码（全程标准化控制），开发时间从几天缩短到几分钟<br>2.<strong>设计到开发的转换效率低</strong>：设计师做完设计稿，开发还要花很多时间理解和实现 → <strong>AI 效能提升</strong>：（设计稿转码已经是趋势）通过 AI 智能理解设计意图，自动生成标准组件代码，开发时间从几天缩短到几分钟 </p>
+<ol start="3">
+<li><strong>代码规范不统一</strong>：不同开发者写出来的代码风格差异很大 → <strong>AI 效能提升</strong>：AI 学习并强制应用统一的代码规范，确保所有生成的代码符合团队标准，一致性大幅提升 </li>
+<li><strong>组件复用困难</strong>：很多相似的功能重复开发 → <strong>AI 效能提升</strong>：AI 智能识别相似需求，推荐和复用已有组件</li>
+</ol>
+<p>这些问题导致开发效率不高，维护成本也很高。</p>
+<h3 id="1-2-解决方案设想"><a href="#1-2-解决方案设想" class="headerlink" title="1.2 解决方案设想"></a>1.2 解决方案设想</h3><p>可以以上三个模块来解决这些问题：</p>
+<ol>
+<li><strong>MS UI System</strong>：负责设计规范的注入，把设计语言变成可执行的代码标准</li>
+<li><strong>组件库</strong>：负责组件级代码规范的注入，提供标准化的组件和开发工具</li>
+<li><strong>AI 转码平台</strong>：负责智能代码生成，目前还在早期探索阶段，已开发初步转码工具，验证整体工作流链路可行。</li>
+</ol>
+<p>这三个模块加起来，是 UniCraft 产研一体化工作流平台的初步构想。</p>
+<h2 id="二、MS-UI-System-设计规范注入（已实现）"><a href="#二、MS-UI-System-设计规范注入（已实现）" class="headerlink" title="二、MS UI System - 设计规范注入（已实现）"></a>二、MS UI System - 设计规范注入（已实现）</h2><h3 id="2-1-设计-Token-系统的实现"><a href="#2-1-设计-Token-系统的实现" class="headerlink" title="2.1 设计 Token 系统的实现"></a>2.1 设计 Token 系统的实现</h3><p>MS UI System 实现了的三层 Token 系统架构，从底层颜色到应用层配置的全链路标准化：</p>
+<h4 id="🎨-Token-层：基础颜色系统"><a href="#🎨-Token-层：基础颜色系统" class="headerlink" title="🎨 Token 层：基础颜色系统"></a>🎨 Token 层：基础颜色系统</h4><p>完整的 19 阶梯颜色系统，支持每种颜色系的精确控制：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* CSS 变量层 - 基础 Token 定义 */</span></span><br><span class="line"><span class="selector-pseudo">:root</span> &#123;</span><br><span class="line">  <span class="comment">/* 蓝色系 - 主色调（基于 #2FA5FF 品牌色构建） */</span></span><br><span class="line">  <span class="attr">--ms-blue-50</span>: <span class="number">#edf7ff</span>; <span class="comment">/* 极浅蓝色背景 */</span></span><br><span class="line">  <span class="attr">--ms-blue-100</span>: <span class="number">#d5edff</span>; <span class="comment">/* 浅蓝色背景 */</span></span><br><span class="line">  <span class="attr">--ms-blue-200</span>: <span class="number">#a9daff</span>; <span class="comment">/* 次要蓝色 */</span></span><br><span class="line">  <span class="attr">--ms-blue-300</span>: <span class="number">#80c9ff</span>; <span class="comment">/* 蓝色交互 */</span></span><br><span class="line">  <span class="attr">--ms-blue-400</span>: <span class="number">#57b7ff</span>; <span class="comment">/* 蓝色图标 */</span></span><br><span class="line">  <span class="attr">--ms-blue-500</span>: <span class="number">#2fa5ff</span>; <span class="comment">/* 主色调 ✅ */</span></span><br><span class="line">  <span class="attr">--ms-blue-600</span>: <span class="number">#0694ff</span>; <span class="comment">/* 重要操作 */</span></span><br><span class="line">  <span class="attr">--ms-blue-700</span>: <span class="number">#007edd</span>; <span class="comment">/* 深色按钮 */</span></span><br><span class="line">  <span class="attr">--ms-blue-800</span>: <span class="number">#0067b4</span>; <span class="comment">/* 数据图表 */</span></span><br><span class="line">  <span class="attr">--ms-blue-900</span>: <span class="number">#00508b</span>; <span class="comment">/* 深色模式 */</span></span><br><span class="line">  <span class="attr">--ms-blue-950</span>: <span class="number">#004477</span>; <span class="comment">/* Logo主色 ✅ */</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/* 绿色系 - 成功色（基于 #3ECA78 构建） */</span></span><br><span class="line">  <span class="attr">--ms-green-50</span>: <span class="number">#f6fdf9</span>; <span class="comment">/* 成功背景 */</span></span><br><span class="line">  <span class="attr">--ms-green-500</span>: <span class="number">#3eca78</span>; <span class="comment">/* 成功按钮 */</span></span><br><span class="line">  <span class="attr">--ms-green-600</span>: <span class="number">#389d62</span>; <span class="comment">/* 盈利标签 */</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/* 其他颜色系：Red、Orange、Yellow、Purple、Gold 等 */</span></span><br><span class="line">  <span class="comment">/* 共计 8 种基础色系，每种 19 个阶梯 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="🎯-语义化变量层：设计意图表达"><a href="#🎯-语义化变量层：设计意图表达" class="headerlink" title="🎯 语义化变量层：设计意图表达"></a>🎯 语义化变量层：设计意图表达</h4><p>将原始 Token 转换为有意义的语义变量：</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* SCSS 变量层 - 语义化映射 */</span></span><br><span class="line"><span class="variable">$ms-primary</span>: <span class="variable">$ms-blue-500</span>; <span class="comment">/* 主色调 */</span></span><br><span class="line"><span class="variable">$ms-primary-light</span>: <span class="variable">$ms-blue-400</span>; <span class="comment">/* 浅色主色 */</span></span><br><span class="line"><span class="variable">$ms-primary-dark</span>: <span class="variable">$ms-blue-600</span>; <span class="comment">/* 深色主色 */</span></span><br><span class="line"><span class="variable">$ms-primary-bg</span>: <span class="variable">$ms-blue-50</span>; <span class="comment">/* 主色背景 */</span></span><br><span class="line"><span class="variable">$ms-primary-border</span>: <span class="variable">$ms-blue-200</span>; <span class="comment">/* 主色边框 */</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$ms-success</span>: <span class="variable">$ms-green-500</span>; <span class="comment">/* 成功色 */</span></span><br><span class="line"><span class="variable">$ms-warning</span>: <span class="variable">$ms-yellow-500</span>; <span class="comment">/* 警告色 */</span></span><br><span class="line"><span class="variable">$ms-danger</span>: <span class="variable">$ms-red-500</span>; <span class="comment">/* 危险色 */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 文字体系 */</span></span><br><span class="line"><span class="variable">$ms-text-primary</span>: <span class="variable">$ms-neutral-700</span>; <span class="comment">/* 标题文字 */</span></span><br><span class="line"><span class="variable">$ms-text-regular</span>: <span class="variable">$ms-neutral-600</span>; <span class="comment">/* 正文文字 */</span></span><br><span class="line"><span class="variable">$ms-text-secondary</span>: <span class="variable">$ms-neutral-500</span>; <span class="comment">/* 次要文字 */</span></span><br><span class="line"><span class="variable">$ms-text-disabled</span>: <span class="variable">$ms-neutral-400</span>; <span class="comment">/* 禁用文字 */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 背景体系 */</span></span><br><span class="line"><span class="variable">$ms-bg-primary</span>: <span class="variable">$ms-neutral-50</span>; <span class="comment">/* 主背景 */</span></span><br><span class="line"><span class="variable">$ms-bg-secondary</span>: <span class="variable">$ms-neutral-100</span>; <span class="comment">/* 次背景 */</span></span><br><span class="line"><span class="variable">$ms-bg-overlay</span>: <span class="built_in">rgba</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0.1</span>); <span class="comment">/* 遮罩层 */</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="🛠️-框架层配置：多框架集成"><a href="#🛠️-框架层配置：多框架集成" class="headerlink" title="🛠️ 框架层配置：多框架集成"></a>🛠️ 框架层配置：多框架集成</h4><p>Token 系统无缝集成到各种前端框架：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Tailwind CSS 配置</span></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="attr">theme</span>: &#123;</span><br><span class="line">    <span class="attr">extend</span>: &#123;</span><br><span class="line">      <span class="attr">colors</span>: &#123;</span><br><span class="line">        <span class="string">&quot;ms-blue&quot;</span>: &#123;</span><br><span class="line">          <span class="number">50</span>: <span class="string">&quot;#EDF7FF&quot;</span>,</span><br><span class="line">          <span class="number">500</span>: <span class="string">&quot;#2FA5FF&quot;</span>, <span class="comment">// 主色调</span></span><br><span class="line">          <span class="number">600</span>: <span class="string">&quot;#0694FF&quot;</span>, <span class="comment">// 深色</span></span><br><span class="line">          <span class="comment">// ... 完整19阶梯</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">&quot;ms-primary&quot;</span>: <span class="string">&quot;var(--ms-blue-500)&quot;</span>,</span><br><span class="line">        <span class="string">&quot;ms-text-primary&quot;</span>: <span class="string">&quot;var(--ms-neutral-700)&quot;</span>,</span><br><span class="line">        <span class="comment">// ... 语义化颜色映射</span></span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Element UI 主题配置</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="attr">theme</span>: &#123;</span><br><span class="line">    <span class="attr">color</span>: &#123;</span><br><span class="line">      <span class="attr">primary</span>: <span class="string">&quot;#2FA5FF&quot;</span>, <span class="comment">// 主色调</span></span><br><span class="line">      <span class="attr">success</span>: <span class="string">&quot;#3ECA78&quot;</span>, <span class="comment">// 成功色</span></span><br><span class="line">      <span class="attr">warning</span>: <span class="string">&quot;#FFC123&quot;</span>, <span class="comment">// 警告色</span></span><br><span class="line">      <span class="attr">danger</span>: <span class="string">&quot;#F73E48&quot;</span>, <span class="comment">// 危险色</span></span><br><span class="line">      <span class="attr">info</span>: <span class="string">&quot;#2FA5FF&quot;</span>, <span class="comment">// 信息色</span></span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="📐-Figma-设计规范同步"><a href="#📐-Figma-设计规范同步" class="headerlink" title="📐 Figma 设计规范同步"></a>📐 Figma 设计规范同步</h4><ul>
+<li><strong>PC 端设计规范</strong>：完整组件库和页面模板</li>
+<li><strong>移动端设计规范</strong>：响应式设计指南</li>
+<li><strong>Token 映射表</strong>：设计稿到代码的精确转换</li>
+</ul>
+<p>这个三层 Token 系统确保了：</p>
+<ul>
+<li><strong>一致性</strong>：从设计到开发的无缝衔接</li>
+<li><strong>可维护性</strong>：集中管理避免重复定义</li>
+<li><strong>扩展性</strong>：支持多主题、多租户定制</li>
+<li><strong>性能</strong>：CSS 变量支持运行时主题切换</li>
+</ul>
+<h3 id="2-2-设计规范的工作流"><a href="#2-2-设计规范的工作流" class="headerlink" title="2.2 设计规范的工作流"></a>2.2 设计规范的工作流</h3><p>目前的设计规范工作流是这样的：</p>
+<ol>
+<li>设计规范 → 2. 转换为 Token 变量 → 语义化变量层 → 3. 集成到 Tailwind、element、公司级组件库 配置 → 4. 开发时直接使用</li>
+</ol>
+<p>这个流程已经在项目中实践，具体可以参考之前的设计系统架构文章。</p>
+<h2 id="三、组件库-代码规范注入（代码规范待注入）"><a href="#三、组件库-代码规范注入（代码规范待注入）" class="headerlink" title="三、组件库 - 代码规范注入（代码规范待注入）"></a>三、组件库 - 代码规范注入（代码规范待注入）</h2><h3 id="3-1-组件库的架构设计"><a href="#3-1-组件库的架构设计" class="headerlink" title="3.1 组件库的架构设计"></a>3.1 组件库的架构设计</h3><p>组件库是我们实现得比较完整的一个模块，包括：</p>
+<ol>
+<li><strong>基础组件</strong>：Button、Input、Table 等，已经实现</li>
+<li><strong>复杂组件</strong>：ms-step-form、ms-table 等，已经实现</li>
+<li><strong>三层架构</strong>：基础层、区块层、模板层，已经实现</li>
+</ol>
+<h3 id="3-2-开发规范的注入"><a href="#3-2-开发规范的注入" class="headerlink" title="3.2 开发规范的注入"></a>3.2 开发规范的注入</h3><p>后续将在组件库中实现了多种规范注入：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ESLint配置（已实现）</span></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="attr">rules</span>: &#123;</span><br><span class="line">    <span class="comment">// Vue组件命名规范</span></span><br><span class="line">    <span class="string">&quot;vue/component-name-in-template-casing&quot;</span>: [<span class="string">&quot;error&quot;</span>, <span class="string">&quot;PascalCase&quot;</span>],</span><br><span class="line">    <span class="comment">// Props类型检查</span></span><br><span class="line">    <span class="string">&quot;vue/require-prop-types&quot;</span>: <span class="string">&quot;error&quot;</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Tailwind集成（已实现）</span></span><br><span class="line">module<span class="selector-class">.exports</span> = &#123;</span><br><span class="line">  theme: &#123;</span><br><span class="line">    extend: &#123;</span><br><span class="line">      colors: &#123;</span><br><span class="line">        &#x27;ms-primary&#x27;:<span class="string">&#x27;var(--ms-color-primary)&#x27;</span>,<span class="string">&#x27;ms-success&#x27;</span>: <span class="string">&quot;var(--ms-color-success)&quot;</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、AI-转码平台-智能代码生成（早期实现）"><a href="#四、AI-转码平台-智能代码生成（早期实现）" class="headerlink" title="四、AI 转码平台 - 智能代码生成（早期实现）"></a>四、AI 转码平台 - 智能代码生成（早期实现）</h2><h3 id="4-1-当前状态"><a href="#4-1-当前状态" class="headerlink" title="4.1 当前状态"></a>4.1 当前状态</h3><p>AI 转码平台实现了基础版本，但还有很多需要改进的地方：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Schema渲染引擎（已实现、具体不贴太多代码了）</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SchemaRenderer</span> &#123;</span><br><span class="line">  <span class="title function_">render</span>(<span class="params">schema</span>) &#123;</span><br><span class="line">    <span class="comment">// 将Schema转换为Vue组件</span></span><br><span class="line">    <span class="keyword">const</span> component = <span class="variable language_">this</span>.<span class="title function_">resolveComponent</span>(schema.<span class="property">component</span>);</span><br><span class="line">    <span class="keyword">return</span> component.<span class="title function_">render</span>(schema.<span class="property">props</span>, schema.<span class="property">children</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>目前实现了：</p>
+<ul>
+<li>Schema 驱动的组件渲染（已实现）</li>
+<li>基础的 AI 辅助生成（早期实现）</li>
+<li>SchemaCraft Agent，实现了自然语言到 Schema 的转换，包括 Prompt 工程、知识库（早期实现）</li>
+</ul>
+<h3 id="4-2-计划中的功能"><a href="#4-2-计划中的功能" class="headerlink" title="4.2 计划中的功能"></a>4.2 计划中的功能</h3><p>还有一些功能设计了待完成：</p>
+<ul>
+<li>SchemaCraft Agent 中多 Agent（产品需求 -&gt; schema 生成问答优化）、问答库配置</li>
+<li>智能代码优化（设计阶段，未实现）</li>
+<li>质量验证体系（部分实现）</li>
+</ul>
+<p>这些功能后续会考虑实现，但目前还在思考中。</p>
+<h3 id="4-3-AI-对开发模式的颠覆性影响"><a href="#4-3-AI-对开发模式的颠覆性影响" class="headerlink" title="4.3 AI 对开发模式的颠覆性影响"></a>4.3 AI 对开发模式的颠覆性影响</h3><p>当前 AI 的发展正在快速颠覆传统开发模式和团队合作形式。这就意味着很多团队，特别是开发团队，很快会被迫脱离舒适区进行转型。</p>
+<p><strong>从传统依赖到 AI 自主生成：</strong></p>
+<ul>
+<li><strong>传统模式</strong>：前端项目受限于 Ant Design 等设计系统，开发只能在框架约束内工作</li>
+<li><strong>AI 新模式</strong>：让 AI 读取设计稿和设计规范，根据设计规则自主实现符合规范的 UI 组件</li>
+</ul>
+<p><strong>颠覆性好处：</strong></p>
+<ol>
+<li><strong>不再依赖特定框架</strong>：只要业务需求相同，规则都是一致的</li>
+<li><strong>技术栈无关性</strong>：AI 生成代码不再受限于某种技术栈</li>
+<li><strong>开发范式转变</strong>：从手写代码到规则驱动的 AI 生成</li>
+</ol>
+<p><strong>新时代的最佳实践：</strong><br>AI 将彻底改变软件工程的开发范式，我们的主要精力可以投入到：</p>
+<ul>
+<li>对业务的深入理解</li>
+<li>规则体系的建设和完善</li>
+<li>提供 AI 能理解并遵守的设计规范</li>
+</ul>
+<p>只需要提供 AI 能理解并遵守的规则，在具体业务实现中让 AI 生成符合业务需求的代码。这才是新时代业务组件开发和设计系统真正的最佳实践。</p>
+<p><strong>当前实现状态说明：</strong><br>目前我们主要实现了<strong>产品需求文字转码</strong>能力，AI 可以根据文字描述生成基础组件代码。而<strong>AI 理解设计意图</strong>的功能还在规划设计阶段，暂时还未实现。这需要更先进的 AI 模型和复杂的图像识别技术，后续会逐步探索。</p>
+<h2 id="五、三大模块的协作机制"><a href="#五、三大模块的协作机制" class="headerlink" title="五、三大模块的协作机制"></a>五、三大模块的协作机制</h2><h3 id="5-1-当前的协作方式"><a href="#5-1-当前的协作方式" class="headerlink" title="5.1 当前的协作方式"></a>5.1 当前的协作方式</h3><p>目前三大模块的协作主要是通过：</p>
+<ol>
+<li><strong>设计规范同步</strong>：MS UI System 的 Token 被组件库使用</li>
+<li><strong>组件复用</strong>：组件库的组件被低代码平台调用</li>
+<li><strong>工具链共享</strong>：统一的构建和测试工具</li>
+</ol>
+<h3 id="5-2-脑洞大开的深度集成"><a href="#5-2-脑洞大开的深度集成" class="headerlink" title="5.2 脑洞大开的深度集成"></a>5.2 脑洞大开的深度集成</h3><p>我们设想未来实现更深度的集成：</p>
+<ol>
+<li><strong>自动同步机制</strong>：设计改动自动同步到组件（设计阶段，未实现）</li>
+<li><strong>AI 学习规范</strong>：AI 平台学习现有的代码规范（部分实现）</li>
+<li><strong>端到端工作流</strong>：从需求到部署的完整自动化（设计阶段，未实现）</li>
+</ol>
+<h2 id="六、平台价值和挑战"><a href="#六、平台价值和挑战" class="headerlink" title="六、平台价值和挑战"></a>六、平台价值和挑战</h2><h3 id="6-1-已经实现的收益"><a href="#6-1-已经实现的收益" class="headerlink" title="6.1 已经实现的收益"></a>6.1 已经实现的收益</h3><p>通过已有的实现，我们看到了一些明显的改善：</p>
+<ol>
+<li><strong>开发效率大幅提升</strong>：AI 转码效率极高，组件 UI 开发变为分钟级，同时组件复用减少了重复开发</li>
+<li><strong>代码质量改善</strong>：统一的规范提高了代码一致性</li>
+<li><strong>维护成本降低</strong>：Token 系统简化了主题管理</li>
+</ol>
+<h3 id="6-2-面对的挑战"><a href="#6-2-面对的挑战" class="headerlink" title="6.2 面对的挑战"></a>6.2 面对的挑战</h3><ol>
+<li><strong>工具的好用程度</strong>：工具的使用意味着更加集中的代码管控，对工具的要求极其严格，需要真正做到可靠、稳定、好用</li>
+<li><strong>AI 准确性低</strong>：当前的 AI 生成质量还需要提升</li>
+</ol>
+<h2 id="七、总结"><a href="#七、总结" class="headerlink" title="七、总结"></a>七、总结</h2><p>UniCraft 平台的整体设想和实现个人认为是不错的，但目前很多功能需要持续打磨优化。先从小工具开始，摊子不能铺大。</p>
+<p><strong>已实现的核心能力：</strong></p>
+<ul>
+<li>MS UI System 的设计 Token 系统</li>
+<li>组件库的完整实现和工具链</li>
+<li>低代码平台的基础 Schema 渲染</li>
+</ul>
+<p><strong>计划实现的功能：</strong></p>
+<ul>
+<li>三大模块的深度集成机制</li>
+<li>AI 转码平台的智能化增强</li>
+<li>完整的产研一体化工作流</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="https://github.com/apriljii">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E6%AD%A5%E5%AE%9E%E7%8E%B0%E7%9A%84Demo"><span class="toc-number">2.</span> <span class="toc-text">初步实现的Demo</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8E%AC-UniCraft-%E7%AC%AC%E4%B8%80%E7%89%88Demo%E5%8A%9F%E8%83%BD%E6%BC%94%E7%A4%BA"><span class="toc-number">2.1.</span> <span class="toc-text">🎬 UniCraft 第一版Demo功能演示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%9A%80-AI%E8%BD%AC%E7%A0%81%E5%B9%B3%E5%8F%B0MVP%E9%AA%8C%E8%AF%81"><span class="toc-number">2.2.</span> <span class="toc-text">🚀 AI转码平台MVP验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%8A-UniCraft-vs-%E9%80%9A%E4%B9%89%E7%81%B5%E7%A0%81-AI%E8%BD%AC%E7%A0%81%E8%83%BD%E5%8A%9B%E5%AF%B9%E6%AF%94"><span class="toc-number">2.3.</span> <span class="toc-text">📊 UniCraft vs 通义灵码 AI转码能力对比</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%B9%E6%AF%94%E4%B8%80%EF%BC%9A%E5%88%86%E7%BB%84%E8%A1%A8%E5%8D%95%E7%94%9F%E6%88%90%E8%83%BD%E5%8A%9B"><span class="toc-number">2.3.1.</span> <span class="toc-text">对比一：分组表单生成能力</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%B9%E6%AF%94%E4%BA%8C%EF%BC%9A%E5%88%86%E6%AD%A5%E8%A1%A8%E5%8D%95%E7%94%9F%E6%88%90%E8%83%BD%E5%8A%9B"><span class="toc-number">2.3.2.</span> <span class="toc-text">对比二：分步表单生成能力</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84%E6%80%BB%E8%A7%88"><span class="toc-number">3.</span> <span class="toc-text">平台架构总览</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%B6%E6%9E%84%E5%9B%BE%E8%AF%B4%E6%98%8E"><span class="toc-number">3.1.</span> <span class="toc-text">架构图说明</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%B9%B3%E5%8F%B0%E5%AE%9A%E4%BD%8D%E5%92%8C%E6%A0%B8%E5%BF%83%E9%97%AE%E9%A2%98"><span class="toc-number">4.</span> <span class="toc-text">一、平台定位和核心问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">4.1.</span> <span class="toc-text">1.1 遇到的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E8%AE%BE%E6%83%B3"><span class="toc-number">4.2.</span> <span class="toc-text">1.2 解决方案设想</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81MS-UI-System-%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83%E6%B3%A8%E5%85%A5%EF%BC%88%E5%B7%B2%E5%AE%9E%E7%8E%B0%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">二、MS UI System - 设计规范注入（已实现）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E8%AE%BE%E8%AE%A1-Token-%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">5.1.</span> <span class="toc-text">2.1 设计 Token 系统的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%8E%A8-Token-%E5%B1%82%EF%BC%9A%E5%9F%BA%E7%A1%80%E9%A2%9C%E8%89%B2%E7%B3%BB%E7%BB%9F"><span class="toc-number">5.1.1.</span> <span class="toc-text">🎨 Token 层：基础颜色系统</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%8E%AF-%E8%AF%AD%E4%B9%89%E5%8C%96%E5%8F%98%E9%87%8F%E5%B1%82%EF%BC%9A%E8%AE%BE%E8%AE%A1%E6%84%8F%E5%9B%BE%E8%A1%A8%E8%BE%BE"><span class="toc-number">5.1.2.</span> <span class="toc-text">🎯 语义化变量层：设计意图表达</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%9B%A0%EF%B8%8F-%E6%A1%86%E6%9E%B6%E5%B1%82%E9%85%8D%E7%BD%AE%EF%BC%9A%E5%A4%9A%E6%A1%86%E6%9E%B6%E9%9B%86%E6%88%90"><span class="toc-number">5.1.3.</span> <span class="toc-text">🛠️ 框架层配置：多框架集成</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%93%90-Figma-%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83%E5%90%8C%E6%AD%A5"><span class="toc-number">5.1.4.</span> <span class="toc-text">📐 Figma 设计规范同步</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-number">5.2.</span> <span class="toc-text">2.2 设计规范的工作流</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E7%BB%84%E4%BB%B6%E5%BA%93-%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83%E6%B3%A8%E5%85%A5%EF%BC%88%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83%E5%BE%85%E6%B3%A8%E5%85%A5%EF%BC%89"><span class="toc-number">6.</span> <span class="toc-text">三、组件库 - 代码规范注入（代码规范待注入）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E7%BB%84%E4%BB%B6%E5%BA%93%E7%9A%84%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-number">6.1.</span> <span class="toc-text">3.1 组件库的架构设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83%E7%9A%84%E6%B3%A8%E5%85%A5"><span class="toc-number">6.2.</span> <span class="toc-text">3.2 开发规范的注入</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81AI-%E8%BD%AC%E7%A0%81%E5%B9%B3%E5%8F%B0-%E6%99%BA%E8%83%BD%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%EF%BC%88%E6%97%A9%E6%9C%9F%E5%AE%9E%E7%8E%B0%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">四、AI 转码平台 - 智能代码生成（早期实现）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%BD%93%E5%89%8D%E7%8A%B6%E6%80%81"><span class="toc-number">7.1.</span> <span class="toc-text">4.1 当前状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E8%AE%A1%E5%88%92%E4%B8%AD%E7%9A%84%E5%8A%9F%E8%83%BD"><span class="toc-number">7.2.</span> <span class="toc-text">4.2 计划中的功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-AI-%E5%AF%B9%E5%BC%80%E5%8F%91%E6%A8%A1%E5%BC%8F%E7%9A%84%E9%A2%A0%E8%A6%86%E6%80%A7%E5%BD%B1%E5%93%8D"><span class="toc-number">7.3.</span> <span class="toc-text">4.3 AI 对开发模式的颠覆性影响</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E4%B8%89%E5%A4%A7%E6%A8%A1%E5%9D%97%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%9C%BA%E5%88%B6"><span class="toc-number">8.</span> <span class="toc-text">五、三大模块的协作机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%BD%93%E5%89%8D%E7%9A%84%E5%8D%8F%E4%BD%9C%E6%96%B9%E5%BC%8F"><span class="toc-number">8.1.</span> <span class="toc-text">5.1 当前的协作方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E8%84%91%E6%B4%9E%E5%A4%A7%E5%BC%80%E7%9A%84%E6%B7%B1%E5%BA%A6%E9%9B%86%E6%88%90"><span class="toc-number">8.2.</span> <span class="toc-text">5.2 脑洞大开的深度集成</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%B9%B3%E5%8F%B0%E4%BB%B7%E5%80%BC%E5%92%8C%E6%8C%91%E6%88%98"><span class="toc-number">9.</span> <span class="toc-text">六、平台价值和挑战</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E5%B7%B2%E7%BB%8F%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%94%B6%E7%9B%8A"><span class="toc-number">9.1.</span> <span class="toc-text">6.1 已经实现的收益</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E9%9D%A2%E5%AF%B9%E7%9A%84%E6%8C%91%E6%88%98"><span class="toc-number">9.2.</span> <span class="toc-text">6.2 面对的挑战</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">七、总结</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&text=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&title=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&is_video=false&description=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览&body=Check out this article: https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&title=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&title=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&title=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&title=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&name=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2025/11/23/1-devcraft-flow-platform-overview/&t=UniCraft AI转码平台 - 1. 产研一体化工作流平台架构总览"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    April Ji
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

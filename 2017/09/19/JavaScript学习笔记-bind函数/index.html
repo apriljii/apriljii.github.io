@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang=ch>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="下面是官方文档的纯手工翻译：  Funciton.prototype.bind()  bind()函数创建了这样一个函数：当被调用时，this关键字会被赋值到给定的value。当一个新函数被调用时，原本的一系列参数会在给定value的前面一起传递给新函数。 语法 fun.bind(thisArg[, arg1[, arg2[, …]]])  参数 thisArg   当被绑定的函数被调用时， 这个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript学习笔记-bind函数">
+<meta property="og:url" content="https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/index.html">
+<meta property="og:site_name" content="April">
+<meta property="og:description" content="下面是官方文档的纯手工翻译：  Funciton.prototype.bind()  bind()函数创建了这样一个函数：当被调用时，this关键字会被赋值到给定的value。当一个新函数被调用时，原本的一系列参数会在给定value的前面一起传递给新函数。 语法 fun.bind(thisArg[, arg1[, arg2[, …]]])  参数 thisArg   当被绑定的函数被调用时， 这个">
+<meta property="og:locale">
+<meta property="article:published_time" content="2017-09-19T02:16:08.000Z">
+<meta property="article:modified_time" content="2026-01-12T07:55:11.535Z">
+<meta property="article:author" content="April Ji">
+<meta property="article:tag" content="javascript">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>JavaScript学习笔记-bind函数</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+	<!-- mermaid -->
+	<script src='https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js'></script>
+	<script>
+		mermaid.initialize({
+			startOnLoad: true,
+			theme: 'dark',
+			securityLevel: 'loose'
+		});
+	</script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2017/09/21/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2017/09/05/a%E6%A0%87%E7%AD%BE%E7%9A%84target%E5%B1%9E%E6%80%A7%E4%BD%BF%E7%94%A8%E5%8F%8A%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&text=JavaScript学习笔记-bind函数"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&title=JavaScript学习笔记-bind函数"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&is_video=false&description=JavaScript学习笔记-bind函数"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=JavaScript学习笔记-bind函数&body=Check out this article: https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&title=JavaScript学习笔记-bind函数"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&title=JavaScript学习笔记-bind函数"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&title=JavaScript学习笔记-bind函数"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&title=JavaScript学习笔记-bind函数"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&name=JavaScript学习笔记-bind函数&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&t=JavaScript学习笔记-bind函数"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc-container">
+        <div id="toc-toggle" class="toc-toggle-btn">
+          <i class="fa-solid fa-list"></i>
+          <span>Table of Contents</span>
+        </div>
+        <div id="toc" style="display: none;">
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95"><span class="toc-number">1.</span> <span class="toc-text">语法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0"><span class="toc-number">1.1.</span> <span class="toc-text">参数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%8F%E8%BF%B0"><span class="toc-number">2.</span> <span class="toc-text">描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E4%BE%8B"><span class="toc-number">3.</span> <span class="toc-text">实例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E7%BB%91%E5%AE%9A%E5%87%BD%E6%95%B0"><span class="toc-number">3.1.</span> <span class="toc-text">创建绑定函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%8F%E5%87%BD%E6%95%B0"><span class="toc-number">3.2.</span> <span class="toc-text">偏函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#setTimeout%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">3.3.</span> <span class="toc-text">setTimeout中的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E4%BD%9C%E6%9E%84%E9%80%A0%E5%99%A8%E7%9A%84%E7%BB%91%E5%AE%9A%E5%87%BD%E6%95%B0"><span class="toc-number">3.4.</span> <span class="toc-text">用作构造器的绑定函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shortcuts"><span class="toc-number">3.5.</span> <span class="toc-text">shortcuts</span></a></li></ol></li></ol>
+        </div>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        JavaScript学习笔记-bind函数
+    </h1>
+    
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">April Ji</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2017-09-19T02:16:08.000Z" class="dt-published" itemprop="datePublished">2017-09-19</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/javascript/" rel="tag">javascript</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>下面是官方文档的纯手工翻译：</p>
+<blockquote>
+<p><strong>Funciton.prototype.bind()</strong></p>
+</blockquote>
+<p>bind()函数创建了这样一个函数：当被调用时，this关键字会被赋值到给定的value。当一个新函数被调用时，原本的一系列参数会在给定value的前面一起传递给新函数。</p>
+<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><blockquote>
+<p><strong>fun.bind(thisArg[, arg1[, arg2[, …]]])</strong></p>
+</blockquote>
+<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><blockquote>
+<p><strong>thisArg</strong> </p>
+</blockquote>
+<p>当被绑定的函数被调用时， 这个value被作为this参数传给目标函数。</p>
+<p><strong>注意：</strong><br><strong>如果你使用 new 操作符对被绑定的函数进行构造时，这个值会被忽略</strong></p>
+<blockquote>
+<p><strong>arg1, arg2, …</strong> </p>
+</blockquote>
+<p>当调用目标函数时，这些参数会在其他参数前提供给被绑定的函数。</p>
+<blockquote>
+<p><strong>返回值</strong> </p>
+</blockquote>
+<p>返回值其实是一个给定函数的副本，但是参数变成了<strong>初始参数+this的value</strong></p>
+<h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>bind()函数创建了一个新的绑定函数（<strong>BF</strong>）。这个<strong>BF</strong>是另外一个函数对象，它包含了原始的函数对象。调用一个<strong>BF</strong>时，通常就是执行了它包含的这个函数。<br>一个<strong>BF</strong>有这样几个内部属性:</p>
+<ul>
+<li><p><strong>[[BoundTargetFunction]]</strong>     -原始目标函数对象    </p>
+</li>
+<li><p><strong>[[BoundThis]]</strong>     -当包含的函数对象对调用时，这个value作为this value被传递给函数</p>
+</li>
+<li><p><strong>[[BoundArguments]]</strong> -这些参数将在所有参数前面被传入</p>
+</li>
+<li><p><strong>[[call]]</strong> -执行此对象的相关代码。 传递到内部函数里的参数是<strong>this value+通过调用表达式传入的参数列表</strong>。</p>
+</li>
+</ul>
+<p>当被绑定函数被调用时，他调用了内部方法<strong>[[Call]]</strong>在<strong>[[BoundTargetFunction]]</strong>上。<strong>[[BoundThis]]</strong>    和<strong>[[BoundArguments]]</strong>作为参数传入。</p>
+<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><h3 id="创建绑定函数"><a href="#创建绑定函数" class="headerlink" title="创建绑定函数"></a>创建绑定函数</h3><p>下面是一个简单的例子。初学js的jser经常犯的错误是从一个对象中取到一个方法，直接拿来调用，同时期望调用时的this指向原来的对象。一般来讲，最后都调用失败了。使用bind函数可以直接解决这个问题。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">this</span>.<span class="property">x</span> = <span class="number">9</span>;</span><br><span class="line"><span class="keyword">var</span> <span class="variable language_">module</span> = &#123;</span><br><span class="line">	x： <span class="number">81</span>，</span><br><span class="line">	getX： <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">x</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">module</span>.<span class="title function_">getX</span>();</span><br><span class="line"></span><br><span class="line"><span class="title function_">retriveX</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> boundGetX = retriveX.<span class="title function_">bind</span>(<span class="variable language_">module</span>);</span><br><span class="line"></span><br><span class="line"><span class="title function_">boundGetX</span>();</span><br></pre></td></tr></table></figure>
+
+<h3 id="偏函数"><a href="#偏函数" class="headerlink" title="偏函数"></a>偏函数</h3><p>这个例子是使用bind函数用指定初始化参数创建一个函数。这些参数在this value后面，并被插入到绑定函数的实际传入参数的前面。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">list</span>(<span class="params"></span>) &#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">slice</span>.<span class="title function_">call</span>(<span class="variable language_">arguments</span>);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">var</span> list1 = <span class="title function_">list</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line"> </span><br><span class="line"><span class="keyword">var</span> leadingThirtysevenList = list.<span class="title function_">bind</span>(<span class="literal">null</span>, <span class="number">37</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> list2 = <span class="title function_">leadingThirtysevenList</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> list3 = <span class="title function_">leadingThirtysevenList</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>);</span><br><span class="line"> </span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(list2);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(list3);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="setTimeout中的使用"><a href="#setTimeout中的使用" class="headerlink" title="setTimeout中的使用"></a>setTimeout中的使用</h3><p>在setTimeout中，this的指向已经不是new出的flower对象。使用bind函数，可以将this绑定到函数declare上，这样this的指向就没变化了。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">LateBloomer</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">petalCount</span> = <span class="title class_">Math</span>.<span class="title function_">floor</span>(<span class="title class_">Math</span>.<span class="title function_">random</span>() * <span class="number">12</span>) + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title class_">LateBloomer</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">bloom</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="variable language_">this</span>.<span class="property">declare</span>.<span class="title function_">bind</span>(<span class="variable language_">this</span>), <span class="number">1000</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="title class_">LateBloomer</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">declare</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;I am a beatiful flower with &#x27;</span> +</span><br><span class="line">                    <span class="variable language_">this</span>.<span class="property">petalCount</span> + <span class="string">&#x27; petals!&#x27;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> flower = <span class="keyword">new</span> <span class="title class_">LateBloomer</span>();</span><br><span class="line">flower.<span class="title function_">bloom</span>();</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="用作构造器的绑定函数"><a href="#用作构造器的绑定函数" class="headerlink" title="用作构造器的绑定函数"></a>用作构造器的绑定函数</h3><p>绑定函数非常适用于通过new操作符使用目标函数构造新的实例的场景。当绑定函数被用于构造一个value， 原来的this是被忽略的,可以默认传入null。但是给定的参数还是前置在构造函数调用前。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Point</span>(<span class="params">x, y</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">x</span> = x;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">y</span> = y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title class_">Point</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">toString</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">x</span> + <span class="string">&#x27;,&#x27;</span> + <span class="variable language_">this</span>.<span class="property">y</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> p = <span class="keyword">new</span> <span class="title class_">Point</span>(<span class="number">1</span>,<span class="number">2</span>);</span><br><span class="line">p.<span class="title function_">toString</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">YAxisPoint</span> = <span class="title class_">Point</span>.<span class="title function_">bind</span>(<span class="literal">null</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> emptyObj = &#123;&#125;;</span><br><span class="line"><span class="keyword">var</span> <span class="title class_">YAxisPoint</span> = <span class="title class_">Point</span>.<span class="title function_">bind</span>(emptyObj, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> axisPoint = <span class="keyword">new</span> <span class="title class_">YAxisPoint</span>(<span class="number">5</span>);</span><br><span class="line">axisPoint.<span class="title function_">toString</span>();</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(axisPoint <span class="keyword">instanceof</span> <span class="title class_">Point</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(axisPoint <span class="keyword">instanceof</span> <span class="title class_">YAxisPoint</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">new</span> <span class="title class_">Point</span>(<span class="number">17</span>, <span class="number">42</span>) <span class="keyword">instanceof</span> <span class="title class_">YAxisPoint</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="shortcuts"><a href="#shortcuts" class="headerlink" title="shortcuts"></a>shortcuts</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> unboundSlice = <span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">slice</span>;</span><br><span class="line"><span class="keyword">var</span> slice = <span class="title class_">Function</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">apply</span>.<span class="title function_">bind</span>(unboundSlice);</span><br><span class="line"></span><br><span class="line"><span class="title function_">slice</span>(<span class="variable language_">arguments</span>);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="https://github.com/apriljii">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95"><span class="toc-number">1.</span> <span class="toc-text">语法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0"><span class="toc-number">1.1.</span> <span class="toc-text">参数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%8F%E8%BF%B0"><span class="toc-number">2.</span> <span class="toc-text">描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E4%BE%8B"><span class="toc-number">3.</span> <span class="toc-text">实例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E7%BB%91%E5%AE%9A%E5%87%BD%E6%95%B0"><span class="toc-number">3.1.</span> <span class="toc-text">创建绑定函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%8F%E5%87%BD%E6%95%B0"><span class="toc-number">3.2.</span> <span class="toc-text">偏函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#setTimeout%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">3.3.</span> <span class="toc-text">setTimeout中的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E4%BD%9C%E6%9E%84%E9%80%A0%E5%99%A8%E7%9A%84%E7%BB%91%E5%AE%9A%E5%87%BD%E6%95%B0"><span class="toc-number">3.4.</span> <span class="toc-text">用作构造器的绑定函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shortcuts"><span class="toc-number">3.5.</span> <span class="toc-text">shortcuts</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&text=JavaScript学习笔记-bind函数"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&title=JavaScript学习笔记-bind函数"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&is_video=false&description=JavaScript学习笔记-bind函数"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=JavaScript学习笔记-bind函数&body=Check out this article: https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&title=JavaScript学习笔记-bind函数"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&title=JavaScript学习笔记-bind函数"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&title=JavaScript学习笔记-bind函数"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&title=JavaScript学习笔记-bind函数"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&name=JavaScript学习笔记-bind函数&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2017/09/19/JavaScript%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-bind%E5%87%BD%E6%95%B0/&t=JavaScript学习笔记-bind函数"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    April Ji
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

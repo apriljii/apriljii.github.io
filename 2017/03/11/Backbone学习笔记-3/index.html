@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang=ch>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="本篇主要讲一讲Backbone的设计模式。 MVC？ MVP？现有JavaScript框架很少会按照经典的MVC或者MCP模式来实现，但通常我们会认为Backbone是MVC风格的库。然鹅我们在Backbone中很难界定controller的部分，因为Backbone.View和Backbone.Router共同分担了这部分的责任，所以也有很多开发者认为Backbone更符合MVP的风格。 这么说">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Backbone学习笔记(3)">
+<meta property="og:url" content="https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/index.html">
+<meta property="og:site_name" content="April">
+<meta property="og:description" content="本篇主要讲一讲Backbone的设计模式。 MVC？ MVP？现有JavaScript框架很少会按照经典的MVC或者MCP模式来实现，但通常我们会认为Backbone是MVC风格的库。然鹅我们在Backbone中很难界定controller的部分，因为Backbone.View和Backbone.Router共同分担了这部分的责任，所以也有很多开发者认为Backbone更符合MVP的风格。 这么说">
+<meta property="og:locale">
+<meta property="article:published_time" content="2017-03-11T13:58:21.000Z">
+<meta property="article:modified_time" content="2026-01-12T07:55:11.535Z">
+<meta property="article:author" content="April Ji">
+<meta property="article:tag" content="Backbone">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Backbone学习笔记(3)</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+	<!-- mermaid -->
+	<script src='https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js'></script>
+	<script>
+		mermaid.initialize({
+			startOnLoad: true,
+			theme: 'dark',
+			securityLevel: 'loose'
+		});
+	</script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2017/03/31/Qbuilt-%E5%AE%9E%E7%8E%B0%E5%B9%B6%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84%E8%84%9A%E6%89%8B%E6%9E%B6%E5%B7%A5%E5%85%B7/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2017/03/10/%E9%BC%A0%E6%A0%87%E5%B7%A6%E9%94%AE%E5%BC%B9%E5%87%BA%E8%8F%9C%E5%8D%95%E7%9A%84%E5%AE%9E%E7%8E%B0/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&text=Backbone学习笔记(3)"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&title=Backbone学习笔记(3)"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&is_video=false&description=Backbone学习笔记(3)"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Backbone学习笔记(3)&body=Check out this article: https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&title=Backbone学习笔记(3)"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&title=Backbone学习笔记(3)"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&title=Backbone学习笔记(3)"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&title=Backbone学习笔记(3)"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&name=Backbone学习笔记(3)&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&t=Backbone学习笔记(3)"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc-container">
+        <div id="toc-toggle" class="toc-toggle-btn">
+          <i class="fa-solid fa-list"></i>
+          <span>Table of Contents</span>
+        </div>
+        <div id="toc" style="display: none;">
+          <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#MVC%EF%BC%9F-MVP%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">MVC？ MVP？</span></a></li></ol>
+        </div>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Backbone学习笔记(3)
+    </h1>
+    
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">April Ji</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2017-03-11T13:58:21.000Z" class="dt-published" itemprop="datePublished">2017-03-11</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Backbone/" rel="tag">Backbone</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>本篇主要讲一讲Backbone的设计模式。</p>
+<h3 id="MVC？-MVP？"><a href="#MVC？-MVP？" class="headerlink" title="MVC？ MVP？"></a>MVC？ MVP？</h3><p>现有JavaScript框架很少会按照经典的MVC或者MCP模式来实现，但通常我们会认为Backbone是MVC风格的库。然鹅我们在Backbone中很难界定controller的部分，因为Backbone.View和Backbone.Router共同分担了这部分的责任，所以也有很多开发者认为Backbone更符合MVP的风格。</p>
+<p>这么说主要是由于我们可以发现，当存在很多view被分离到它们的组件中的时候，最后需要把这些分离的View组装到一起。 一般可以通过Backbone.Router或者获取数据之后的回调函数。如果说是MVP风格的话，那Backbone中不同模块需要这样划分：</p>
+<ul>
+<li>Underscore或HandleBars这种模板看作纯视图层</li>
+<li>Backbone.View则作为P，表示器这一层。</li>
+<li>Model还是Model</li>
+</ul>
+<p>回到上一篇的代码中的View层来具体分析：这里的APPView除了作为视图之外，还承包了很多其他的活儿：</p>
+<ul>
+<li>监听Todos的变化，一有变化就重新渲染，这就是观察者模式；</li>
+<li>render部分的模板也是它处理的哦</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">var AppView = Backbone.View.extend(&#123;</span><br><span class="line"></span><br><span class="line">	// APPView的el是$(&quot;#todoapp&quot;)</span><br><span class="line">  el: $(&quot;#todoapp&quot;),</span><br><span class="line"></span><br><span class="line">  statsTemplate: _.template($(&#x27;#stats-template&#x27;).html()),</span><br><span class="line"></span><br><span class="line">  events: &#123;</span><br><span class="line">    &quot;keypress #new-todo&quot;: &quot;createOnEnter&quot;</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  initialize: function() &#123;</span><br><span class="line"></span><br><span class="line">    this.input = this.$(&quot;#new-todo&quot;);</span><br><span class="line">    this.allCheckbox = this.$(&quot;#toggle-all&quot;)[0];</span><br><span class="line"></span><br><span class="line">    this.listenTo(Todos, &#x27;add&#x27;, this.addOne);</span><br><span class="line">    this.listenTo(Todos, &#x27;reset&#x27;, this.addAll);</span><br><span class="line">    this.listenTo(Todos, &#x27;all&#x27;, this.render);</span><br><span class="line"></span><br><span class="line">    this.footer = this.$(&#x27;footer&#x27;);</span><br><span class="line">    this.main = $(&#x27;#main&#x27;);</span><br><span class="line"></span><br><span class="line">    Todos.fetch();</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  render: function() &#123;</span><br><span class="line">    var done = Todos.done().length;</span><br><span class="line">    var remaining = Todos.remaining().length;</span><br><span class="line"></span><br><span class="line">    if (Todos.length) &#123;</span><br><span class="line">      this.main.show();</span><br><span class="line">      this.footer.show();</span><br><span class="line">      this.footer.html(this.statsTemplate(&#123;done: done, remaining: remaining&#125;));</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      this.main.hide();</span><br><span class="line">      this.footer.hide();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    this.allCheckbox.checked = !remaining;</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  createOnEnter: function(e) &#123;</span><br><span class="line">    if(e.keyCode != 13) return;</span><br><span class="line">    if(!this.input.val()) return;</span><br><span class="line"></span><br><span class="line">    Todos.create(&#123;title: this.input.val()&#125;);</span><br><span class="line">    this.input.val(&#x27;&#x27;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>所以强行给Backbone归类不是特别科学，毕竟只是在理论上来匹配，实际当中更多是在经典的模式上有自己的实现。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="https://github.com/apriljii">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#MVC%EF%BC%9F-MVP%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">MVC？ MVP？</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&text=Backbone学习笔记(3)"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&title=Backbone学习笔记(3)"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&is_video=false&description=Backbone学习笔记(3)"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Backbone学习笔记(3)&body=Check out this article: https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&title=Backbone学习笔记(3)"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&title=Backbone学习笔记(3)"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&title=Backbone学习笔记(3)"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&title=Backbone学习笔记(3)"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&name=Backbone学习笔记(3)&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2017/03/11/Backbone%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-3/&t=Backbone学习笔记(3)"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    April Ji
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

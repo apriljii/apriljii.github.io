@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang=ch>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content=".e-content img[alt&#x3D;&quot;vue-diff&quot;] { width: 640px; height: auto; display: block; margin: 0 auto; } .e-content .two-images { width:80%;display:flex; gap:48px; justify-content:center; align-items:flex-star">
+<meta property="og:type" content="article">
+<meta property="og:title" content="俄罗斯方块小游戏(1): Vue的diff过程">
+<meta property="og:url" content="https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:site_name" content="April">
+<meta property="og:description" content=".e-content img[alt&#x3D;&quot;vue-diff&quot;] { width: 640px; height: auto; display: block; margin: 0 auto; } .e-content .two-images { width:80%;display:flex; gap:48px; justify-content:center; align-items:flex-star">
+<meta property="og:locale">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/2dtetris-lite-1.png">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/2dtetris-lite-2.png">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/DOM-model.svg">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/DOM-tree.png">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/webkit-main-flow-b779d50c0cf28_856.png">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/mozillas-gecko-rendering-b18e445544965_856.jpg">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/1.png">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/diff-vue-1.png">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/diff-vue-2.png">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/diff-vue-3.png">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/1/2/160b70ecf5967f0a?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/diff-vue-4.png">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/diff-vue-5.png">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/diff-vue-6.png">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/diff-vue-7.png">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/diff-vue-8.png">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/diff-vue-9.png">
+<meta property="og:image" content="https://apriljii.github.io/img/201806170/diff-vue-10.png">
+<meta property="article:published_time" content="2019-06-17T03:54:14.000Z">
+<meta property="article:modified_time" content="2026-01-29T09:55:02.131Z">
+<meta property="article:author" content="April Ji">
+<meta property="article:tag" content="Vue, 俄罗斯方块小游戏">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://apriljii.github.io/img/201806170/2dtetris-lite-1.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>俄罗斯方块小游戏(1): Vue的diff过程</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+	<!-- mermaid -->
+	<script src='https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js'></script>
+	<script>
+		mermaid.initialize({
+			startOnLoad: true,
+			theme: 'dark',
+			securityLevel: 'loose'
+		});
+	</script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2019/06/23/618%E4%BC%9A%E5%9C%BA%E5%BC%80%E5%8F%91%E6%80%BB%E7%BB%93/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2019/06/05/%E6%8F%90%E5%8D%87%E5%B7%A5%E4%BD%9C%E6%95%88%E7%8E%87%E7%9A%84%E5%B7%A5%E5%85%B7%E6%94%B6%E8%97%8F/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&text=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&title=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&is_video=false&description=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=俄罗斯方块小游戏(1): Vue的diff过程&body=Check out this article: https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&title=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&title=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&title=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&title=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&name=俄罗斯方块小游戏(1): Vue的diff过程&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&t=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc-container">
+        <div id="toc-toggle" class="toc-toggle-btn">
+          <i class="fa-solid fa-list"></i>
+          <span>Table of Contents</span>
+        </div>
+        <div id="toc" style="display: none;">
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%B8%E6%88%8F%E7%95%8C%E9%9D%A2%E5%B1%95%E7%A4%BA"><span class="toc-number">1.</span> <span class="toc-text">游戏界面展示</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E5%85%85%E6%A6%82%E5%BF%B5"><span class="toc-number">2.</span> <span class="toc-text">补充概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Dom-%E6%A0%91"><span class="toc-number">2.1.</span> <span class="toc-text">Dom 树</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%88%E7%8E%B0%E5%BC%95%E6%93%8E%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">2.2.</span> <span class="toc-text">呈现引擎的工作流程</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#webkit-%E4%B8%BB%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="toc-number">2.2.0.1.</span> <span class="toc-text">webkit 主流程：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Mozilla-%E7%9A%84-Gecko-%E4%B8%BB%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="toc-number">2.2.0.2.</span> <span class="toc-text">Mozilla 的 Gecko 主流程：</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text">Vue 基本原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Vue-%E5%86%85%E9%83%A8%E6%B5%81%E7%A8%8B"><span class="toc-number">3.1.</span> <span class="toc-text">Vue 内部流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Vue-js-%E5%BC%82%E6%AD%A5%E6%9B%B4%E6%96%B0%E5%8F%8A-nextTick"><span class="toc-number">3.2.</span> <span class="toc-text">Vue.js 异步更新及 nextTick</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VNode-%E7%BB%93%E7%82%B9"><span class="toc-number">3.3.</span> <span class="toc-text">VNode 结点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-%E7%9A%84-Diff-%E7%AE%97%E6%B3%95"><span class="toc-number">4.</span> <span class="toc-text">Vue 的 Diff 算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%96%B0%E8%80%81%E8%8A%82%E7%82%B9%E7%9A%84%E6%AF%94%E8%BE%83"><span class="toc-number">4.1.</span> <span class="toc-text">1. 新老节点的比较</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#patch-%E6%AF%94%E8%BE%83%E8%BF%87%E7%A8%8B"><span class="toc-number">4.1.1.</span> <span class="toc-text">patch 比较过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%B8%E5%90%8C%E8%8A%82%E7%82%B9-%E2%80%93-sameVNode"><span class="toc-number">4.1.2.</span> <span class="toc-text">相同节点 – sameVNode</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%9B%B8%E5%90%8C%E8%8A%82%E7%82%B9%E8%BF%9B%E8%A1%8C-patchVNode-%E6%AF%94%E8%BE%83"><span class="toc-number">4.2.</span> <span class="toc-text">2. 相同节点进行 patchVNode 比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Diff-%E7%9A%84%E6%A0%B8%E5%BF%83%E5%86%85%E5%AE%B9-%E2%80%94%E2%80%94-updateChildren"><span class="toc-number">4.3.</span> <span class="toc-text">3. Diff 的核心内容 —— updateChildren</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF"><span class="toc-number">4.3.1.</span> <span class="toc-text">循环</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E7%BB%93%E6%9D%9F"><span class="toc-number">4.3.2.</span> <span class="toc-text">循环结束</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%A7%E8%83%BD%E9%97%AE%E9%A2%98"><span class="toc-number">5.</span> <span class="toc-text">小游戏的性能问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-number">5.1.</span> <span class="toc-text">结论</span></a></li></ol></li></ol>
+        </div>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        俄罗斯方块小游戏(1): Vue的diff过程
+    </h1>
+    
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">April Ji</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-06-17T03:54:14.000Z" class="dt-published" itemprop="datePublished">2019-06-17</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Vue-%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F/" rel="tag">Vue, 俄罗斯方块小游戏</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <style>
+.e-content img[alt="vue-diff"] { width: 640px; height: auto; display: block; margin: 0 auto; }
+.e-content .two-images { width:80%;display:flex; gap:48px; justify-content:center; align-items:flex-start; flex-wrap:wrap; }
+.e-content .two-images img { width: 220px; max-width: 420px; height: auto; display: block; }
+　
+/* Responsive: stack two-images vertically on small screens */
+@media (max-width: 640px) {
+  .e-content img { width: 100%; max-width: 100%; }
+  .e-content .two-images { flex-direction: column; gap: 24px; align-items: center; }
+  .e-content .two-images img { max-width: 100%; }
+}
+</style>
+
+<h2 id="游戏界面展示"><a href="#游戏界面展示" class="headerlink" title="游戏界面展示"></a>游戏界面展示</h2><div class="two-images">
+  <img src="/img/201806170/2dtetris-lite-1.png" alt="DOM-tree">
+  <img src="/img/201806170/2dtetris-lite-2.png" alt="DOM-tree">
+</div>
+
+<h2 id="补充概念"><a href="#补充概念" class="headerlink" title="补充概念"></a>补充概念</h2><p><a href="https://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/#DOM">参考链接-浏览器的工作原理：新式网络浏览器幕后揭秘</a></p>
+<h3 id="Dom-树"><a href="#Dom-树" class="headerlink" title="Dom 树"></a>Dom 树</h3><p>解析器的输出“解析树”是由 DOM 元素和属性节点构成的树结构。DOM 是文档对象模型 (Document Object Model) 的缩写。它是 HTML 文档的对象表示，同时也是外部内容（例如 JavaScript）与 HTML 元素之间的接口。<br>解析树的根节点是“Document”对象</p>
+<p><img src="/img/201806170/DOM-model.svg" alt="DOM-tree"></p>
+<p>比如这样的 HTML，Dom 和标记是一一对应的关系：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello World<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;example.png&quot;</span> /&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>它的 Dom 树如下：</p>
+<p><img src="/img/201806170/DOM-tree.png" alt="DOM-tree"></p>
+<h3 id="呈现引擎的工作流程"><a href="#呈现引擎的工作流程" class="headerlink" title="呈现引擎的工作流程"></a>呈现引擎的工作流程</h3><h5 id="webkit-主流程："><a href="#webkit-主流程：" class="headerlink" title="webkit 主流程："></a>webkit 主流程：</h5><p><img src="/img/201806170/webkit-main-flow-b779d50c0cf28_856.png" alt="Webkit主流程"></p>
+<h5 id="Mozilla-的-Gecko-主流程："><a href="#Mozilla-的-Gecko-主流程：" class="headerlink" title="Mozilla 的 Gecko 主流程："></a>Mozilla 的 Gecko 主流程：</h5><p><img src="/img/201806170/mozillas-gecko-rendering-b18e445544965_856.jpg" alt="Mozilla 的 Gecko主流程"></p>
+<h2 id="Vue-基本原理"><a href="#Vue-基本原理" class="headerlink" title="Vue 基本原理"></a>Vue 基本原理</h2><h3 id="Vue-内部流程"><a href="#Vue-内部流程" class="headerlink" title="Vue 内部流程"></a>Vue 内部流程</h3><!--![Vue内部流程](https://segmentfault.com/img/bV51sZ?w=1752&h=1216)-->
+
+<p><img src="/img/201806170/1.png" alt="Vue内部流程"></p>
+<h3 id="Vue-js-异步更新及-nextTick"><a href="#Vue-js-异步更新及-nextTick" class="headerlink" title="Vue.js 异步更新及 nextTick"></a>Vue.js 异步更新及 nextTick</h3><p><a href="https://blog.csdn.net/sinat_17775997/article/details/82183435">https://blog.csdn.net/sinat_17775997/article/details/82183435</a></p>
+<p><a href="https://github.com/tuzilingdang/learnVue/blob/master/docs/Vue.js%E5%BC%82%E6%AD%A5%E6%9B%B4%E6%96%B0DOM%E7%AD%96%E7%95%A5%E5%8F%8AnextTick.MarkDown">https://github.com/tuzilingdang/learnVue/blob/master/docs/Vue.js%E5%BC%82%E6%AD%A5%E6%9B%B4%E6%96%B0DOM%E7%AD%96%E7%95%A5%E5%8F%8AnextTick.MarkDown</a></p>
+<h3 id="VNode-结点"><a href="#VNode-结点" class="headerlink" title="VNode 结点"></a>VNode 结点</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> <span class="title class_">VNode</span> &#123;</span><br><span class="line">  <span class="attr">tag</span>: string | <span class="keyword">void</span>;</span><br><span class="line">  <span class="attr">data</span>: <span class="title class_">VNodeData</span> | <span class="keyword">void</span>;</span><br><span class="line">  <span class="attr">children</span>: ?<span class="title class_">Array</span>&lt;<span class="title class_">VNode</span>&gt;;</span><br><span class="line">  <span class="attr">text</span>: string | <span class="keyword">void</span>;</span><br><span class="line">  <span class="attr">elm</span>: <span class="title class_">Node</span> | <span class="keyword">void</span>;</span><br><span class="line">  <span class="attr">ns</span>: string | <span class="keyword">void</span>;</span><br><span class="line">  <span class="attr">context</span>: <span class="title class_">Component</span> | <span class="keyword">void</span>; <span class="comment">// rendered in this component&#x27;s scope</span></span><br><span class="line">  <span class="attr">functionalContext</span>: <span class="title class_">Component</span> | <span class="keyword">void</span>; <span class="comment">// only for functional component root nodes</span></span><br><span class="line">  <span class="attr">key</span>: string | number | <span class="keyword">void</span>;</span><br><span class="line">  <span class="attr">componentOptions</span>: <span class="title class_">VNodeComponentOptions</span> | <span class="keyword">void</span>;</span><br><span class="line">  <span class="attr">componentInstance</span>: <span class="title class_">Component</span> | <span class="keyword">void</span>; <span class="comment">// component instance</span></span><br><span class="line">  <span class="attr">parent</span>: <span class="title class_">VNode</span> | <span class="keyword">void</span>; <span class="comment">// component placeholder node</span></span><br><span class="line">  <span class="attr">raw</span>: boolean; <span class="comment">// contains raw HTML? (server only)</span></span><br><span class="line">  <span class="attr">isStatic</span>: boolean; <span class="comment">// hoisted static node</span></span><br><span class="line">  <span class="attr">isRootInsert</span>: boolean; <span class="comment">// necessary for enter transition check</span></span><br><span class="line">  <span class="attr">isComment</span>: boolean; <span class="comment">// empty comment placeholder?</span></span><br><span class="line">  <span class="attr">isCloned</span>: boolean; <span class="comment">// is a cloned node?</span></span><br><span class="line">  <span class="attr">isOnce</span>: boolean; <span class="comment">// is a v-once node?</span></span><br><span class="line"></span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"></span></span><br><span class="line"><span class="params">    tag?: string,</span></span><br><span class="line"><span class="params">    data?: VNodeData,</span></span><br><span class="line"><span class="params">    children?: ?<span class="built_in">Array</span>&lt;VNode&gt;,</span></span><br><span class="line"><span class="params">    text?: string,</span></span><br><span class="line"><span class="params">    elm?: Node,</span></span><br><span class="line"><span class="params">    context?: Component,</span></span><br><span class="line"><span class="params">    componentOptions?: VNodeComponentOptions</span></span><br><span class="line"><span class="params">  </span>) &#123;</span><br><span class="line">    <span class="comment">/*当前节点的标签名*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">tag</span> = tag;</span><br><span class="line">    <span class="comment">/*当前节点对应的对象，包含了具体的一些数据信息，是一个VNodeData类型，可以参考VNodeData类型中的数据信息*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">data</span> = data;</span><br><span class="line">    <span class="comment">/*当前节点的子节点，是一个数组*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">children</span> = children;</span><br><span class="line">    <span class="comment">/*当前节点的文本*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">text</span> = text;</span><br><span class="line">    <span class="comment">/*当前虚拟节点对应的真实dom节点*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">elm</span> = elm;</span><br><span class="line">    <span class="comment">/*当前节点的名字空间*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">ns</span> = <span class="literal">undefined</span>;</span><br><span class="line">    <span class="comment">/*编译作用域*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">context</span> = context;</span><br><span class="line">    <span class="comment">/*函数化组件作用域*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">functionalContext</span> = <span class="literal">undefined</span>;</span><br><span class="line">    <span class="comment">/*节点的key属性，被当作节点的标志，用以优化*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">key</span> = data &amp;&amp; data.<span class="property">key</span>;</span><br><span class="line">    <span class="comment">/*组件的option选项*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">componentOptions</span> = componentOptions;</span><br><span class="line">    <span class="comment">/*当前节点对应的组件的实例*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">componentInstance</span> = <span class="literal">undefined</span>;</span><br><span class="line">    <span class="comment">/*当前节点的父节点*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">parent</span> = <span class="literal">undefined</span>;</span><br><span class="line">    <span class="comment">/*简而言之就是是否为原生HTML或只是普通文本，innerHTML的时候为true，textContent的时候为false*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">raw</span> = <span class="literal">false</span>;</span><br><span class="line">    <span class="comment">/*静态节点标志*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">isStatic</span> = <span class="literal">false</span>;</span><br><span class="line">    <span class="comment">/*是否作为根节点插入*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">isRootInsert</span> = <span class="literal">true</span>;</span><br><span class="line">    <span class="comment">/*是否为注释节点*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">isComment</span> = <span class="literal">false</span>;</span><br><span class="line">    <span class="comment">/*是否为克隆节点*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">isCloned</span> = <span class="literal">false</span>;</span><br><span class="line">    <span class="comment">/*是否有v-once指令*/</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">isOnce</span> = <span class="literal">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// DEPRECATED: alias for componentInstance for backwards compat.</span></span><br><span class="line">  <span class="comment">/* istanbul ignore next */</span></span><br><span class="line">  <span class="keyword">get</span> <span class="title function_">child</span>(): <span class="title class_">Component</span> | <span class="keyword">void</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">componentInstance</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>简单的 Vnode 树</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    tag: <span class="string">&#x27;div&#x27;</span></span><br><span class="line">    data: &#123;</span><br><span class="line">        class: <span class="string">&#x27;test&#x27;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    children: [</span><br><span class="line">        &#123;</span><br><span class="line">            tag: <span class="string">&#x27;span&#x27;</span>,</span><br><span class="line">            data: &#123;</span><br><span class="line">                class: <span class="string">&#x27;demo&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="selector-tag">text</span>: <span class="string">&#x27;hello,VNode&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>对应的 HTML</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;test&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;demo&quot;</span>&gt;</span>hello,VNode<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Vue-的-Diff-算法"><a href="#Vue-的-Diff-算法" class="headerlink" title="Vue 的 Diff 算法"></a>Vue 的 Diff 算法</h2><h3 id="1-新老节点的比较"><a href="#1-新老节点的比较" class="headerlink" title="1. 新老节点的比较"></a>1. 新老节点的比较</h3><h4 id="patch-比较过程"><a href="#patch-比较过程" class="headerlink" title="patch 比较过程"></a>patch 比较过程</h4><p><img src="/img/201806170/diff-vue-1.png" alt="vue-diff"></p>
+<p><img src="/img/201806170/diff-vue-2.png" alt="vue-diff"></p>
+<h4 id="相同节点-–-sameVNode"><a href="#相同节点-–-sameVNode" class="headerlink" title="相同节点 – sameVNode"></a>相同节点 – sameVNode</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  判断两个VNode节点是否是同一个节点，需要满足以下条件</span></span><br><span class="line"><span class="comment">  key相同</span></span><br><span class="line"><span class="comment">  tag（当前节点的标签名）相同</span></span><br><span class="line"><span class="comment">  isComment（是否为注释节点）相同</span></span><br><span class="line"><span class="comment">  是否data（当前节点对应的对象，包含了具体的一些数据信息，是一个VNodeData类型，可以参考VNodeData类型中的数据信息）都有定义</span></span><br><span class="line"><span class="comment">  当标签是&lt;input&gt;的时候，type必须相同</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">sameVnode</span>(<span class="params">a, b</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    a.<span class="property">key</span> === b.<span class="property">key</span> &amp;&amp;</span><br><span class="line">    a.<span class="property">tag</span> === b.<span class="property">tag</span> &amp;&amp;</span><br><span class="line">    a.<span class="property">isComment</span> === b.<span class="property">isComment</span> &amp;&amp;</span><br><span class="line">    <span class="title function_">isDef</span>(a.<span class="property">data</span>) === <span class="title function_">isDef</span>(b.<span class="property">data</span>) &amp;&amp;</span><br><span class="line">    <span class="title function_">sameInputType</span>(a, b)</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-相同节点进行-patchVNode-比较"><a href="#2-相同节点进行-patchVNode-比较" class="headerlink" title="2. 相同节点进行 patchVNode 比较"></a>2. 相同节点进行 patchVNode 比较</h3><ul>
+<li><p>如果新旧 VNode 都是静态的，同时它们的 key 相同（代表同一节点），并且新的 VNode 是 clone 或者是标记了 once（标记 v-once 属性，只渲染一次），那么只需要替换 elm 以及 componentInstance 即可。</p>
+</li>
+<li><p>新老节点均有 children 子节点，则对子节点进行 diff 操作，调用 updateChildren，这个 updateChildren 也是 diff 的核心。</p>
+</li>
+<li><p>如果老节点没有子节点而新节点存在子节点，先清空老节点 DOM 的文本内容，然后为当前 DOM 节点加入子节点。</p>
+</li>
+<li><p>当新节点没有子节点而老节点有子节点的时候，则移除该 DOM 节点的所有子节点。</p>
+</li>
+<li><p>当新老节点都无子节点的时候，只是文本的替换。</p>
+</li>
+</ul>
+<h3 id="3-Diff-的核心内容-——-updateChildren"><a href="#3-Diff-的核心内容-——-updateChildren" class="headerlink" title="3. Diff 的核心内容 —— updateChildren"></a>3. Diff 的核心内容 —— updateChildren</h3><h4 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h4><p>(1) 四个指针向内靠拢， 两两比对共 4 次</p>
+<p><img src="/img/201806170/diff-vue-3.png" alt="vue-diff"></p>
+<p><img src="https://user-gold-cdn.xitu.io/2018/1/2/160b70ecf5967f0a?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="vue-diff"></p>
+<ul>
+<li>第 1 种比对</li>
+</ul>
+<p><img src="/img/201806170/diff-vue-4.png" alt="vue-diff"></p>
+<ul>
+<li>第 2 种比对</li>
+</ul>
+<p><img src="/img/201806170/diff-vue-5.png" alt="vue-diff"></p>
+<ul>
+<li>第 3 种比对</li>
+</ul>
+<p><img src="/img/201806170/diff-vue-6.png" alt="vue-diff"></p>
+<p>-</p>
+<p>(2) 以上 4 中比较不满足</p>
+<p>通过 createKeyToOldIdx 会得到一个 oldKeyToIdx，里面存放了一个 key 为旧的 VNode，value 为对应 index 序列的哈希表。从这个哈希表中可以找到是否有与 newStartVnode 一致 key 旧的 VNode 节点，如果同时满足 sameVnode，patchVnode 的同时会将这个真实 DOM（elmToMove）移动到 oldStartVnode 对应的真实 DOM 的前面</p>
+<p>!<img src="/img/201806170/diff-vue-7.png" alt="vue-diff"></p>
+<p>newStartVnode 在旧的 VNode 节点找不到一致的 key，或者是即便 key 相同却不是 sameVnode，这个时候会调用 createElm 创建一个新的 DOM 节点</p>
+<p>!<img src="/img/201806170/diff-vue-8.png" alt="vue-diff"></p>
+<h4 id="循环结束"><a href="#循环结束" class="headerlink" title="循环结束"></a>循环结束</h4><p>第一种情况，oldStartIdx &gt; oldEndIdx，老 VNode 节点遍历完，新的节点没有，则调用 addVnodes 将剩下的新增 VNode 节点插到真实 DOM 节点中。</p>
+<p>!<img src="/img/201806170/diff-vue-9.png" alt="vue-diff"></p>
+<p>第二种情况，newStartIdx &gt; newEndIdx 时，新 VNode 节点遍历完，老的节点有剩余，则调用 removeVnodes 将这些多余的真实 DOM 删除。</p>
+<p>!<img src="/img/201806170/diff-vue-10.png" alt="vue-diff"></p>
+<h2 id="小游戏的性能问题"><a href="#小游戏的性能问题" class="headerlink" title="小游戏的性能问题"></a>小游戏的性能问题</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">left</span>(<span class="params">matrix</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">y</span> - <span class="number">1</span> &lt; <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span>; i &lt; <span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span>  + <span class="variable language_">this</span>.<span class="property">shape</span>.<span class="property">length</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span>(matrix[i][<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">y</span> - <span class="number">1</span>] == <span class="number">1</span>) <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">y</span>--;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="variable language_">this</span>.<span class="property">shape</span>.<span class="property">length</span>; i++) &#123;</span><br><span class="line">        matrix[<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> + i] &amp;&amp; matrix[<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> + i].<span class="title function_">splice</span>(<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">y</span> + <span class="variable language_">this</span>.<span class="property">shape</span>[<span class="number">0</span>].<span class="property">length</span>, <span class="number">1</span>, <span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="variable language_">this</span>.<span class="property">shape</span>.<span class="property">length</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; <span class="variable language_">this</span>.<span class="property">shape</span>[i].<span class="property">length</span>; j++) &#123;</span><br><span class="line">            matrix[<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> + i] &amp;&amp; matrix[<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> + i].<span class="title function_">splice</span>(<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">y</span> + j, <span class="number">1</span>, <span class="variable language_">this</span>.<span class="property">shape</span>[i][j])</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">down</span>(<span class="params">matrix, accRowsList, clearRows</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> shapeHeight = <span class="variable language_">this</span>.<span class="property">shape</span>.<span class="property">length</span></span><br><span class="line">    <span class="keyword">const</span> shapeWidth = <span class="variable language_">this</span>.<span class="property">shape</span>[<span class="number">0</span>].<span class="property">length</span></span><br><span class="line">    <span class="keyword">const</span> shape = <span class="variable language_">this</span>.<span class="property">shape</span></span><br><span class="line">    <span class="keyword">const</span> posY = <span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">y</span></span><br><span class="line">    <span class="keyword">const</span> matLength = matrix[<span class="number">0</span>].<span class="property">length</span></span><br><span class="line">    <span class="keyword">let</span> shapeAcc = []</span><br><span class="line">    <span class="keyword">let</span> crashType = <span class="string">&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; shapeWidth; j++) &#123;</span><br><span class="line">        <span class="keyword">const</span> attatchBottom = (<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> + <span class="variable language_">this</span>.<span class="property">shape</span>.<span class="property">length</span>) &gt;= matrix.<span class="property">length</span></span><br><span class="line">        <span class="keyword">const</span> blockCrash = matrix[<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> + <span class="variable language_">this</span>.<span class="property">shape</span>.<span class="property">length</span>] &amp;&amp; matrix[<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> + <span class="variable language_">this</span>.<span class="property">shape</span>.<span class="property">length</span>][<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">y</span> + j] &amp;&amp; <span class="variable language_">this</span>.<span class="property">shape</span>[shapeHeight - <span class="number">1</span>][j]</span><br><span class="line">        <span class="keyword">if</span> (attatchBottom || blockCrash) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; shapeHeight; i++) &#123;</span><br><span class="line">                <span class="comment">// 检测是否行满</span></span><br><span class="line">                <span class="keyword">if</span> (<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> + i &gt; -<span class="number">1</span>) &#123;</span><br><span class="line">                    <span class="keyword">let</span> checkLine = matrix[<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> + i] &amp;&amp; matrix[<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> + i].<span class="title function_">filter</span>(<span class="function"><span class="params">value</span> =&gt;</span> &#123;</span><br><span class="line">                        <span class="keyword">return</span> value == <span class="number">1</span></span><br><span class="line">                    &#125;)</span><br><span class="line">                    <span class="keyword">if</span> (checkLine.<span class="property">length</span> == matLength) clearRows.<span class="title function_">push</span>(<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> + i)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            crashType = blockCrash ? <span class="string">&#x27;blockCrash&#x27;</span> : <span class="string">&#x27;attatchBottom&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (crashType) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; shapeWidth; j++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; shapeHeight; i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!shapeAcc[j] &amp;&amp; shape[i][j]) shapeAcc[j] = shapeHeight - i</span><br><span class="line">            &#125;</span><br><span class="line">            accRowsList[posY + j] = crashType == <span class="string">&#x27;blockCrash&#x27;</span> ? matrix.<span class="property">length</span> - <span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> - shapeHeight + shapeAcc[j] : accRowsList[posY + j] + shapeAcc[j]</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span>++;</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> - <span class="number">1</span> &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="variable language_">this</span>.<span class="property">shape</span>[<span class="number">0</span>].<span class="property">length</span>; i++)</span><br><span class="line">            matrix[<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> - <span class="number">1</span>].<span class="title function_">splice</span>(<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">y</span> + i, <span class="number">1</span>, <span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="variable language_">this</span>.<span class="property">shape</span>.<span class="property">length</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; <span class="variable language_">this</span>.<span class="property">shape</span>[i].<span class="property">length</span>; j++) &#123;</span><br><span class="line">            <span class="keyword">const</span> newVal = i == <span class="variable language_">this</span>.<span class="property">shape</span>.<span class="property">length</span> - <span class="number">1</span> ? <span class="variable language_">this</span>.<span class="property">shape</span>[i][j] || matrix[<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> + i][<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">y</span> + j] : <span class="variable language_">this</span>.<span class="property">shape</span>[i][j]</span><br><span class="line">            matrix[<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> + i] &amp;&amp; matrix[<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">x</span> + i].<span class="title function_">splice</span>(<span class="variable language_">this</span>.<span class="property">pos</span>.<span class="property">y</span> + j, <span class="number">1</span>, newVal)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;screen-grid-area&quot;</span> <span class="attr">:class</span>=<span class="string">&quot;!isGameOn ? &#x27;hidden&#x27;: &#x27;&#x27;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span></span></span><br><span class="line"><span class="tag">    <span class="attr">class</span>=<span class="string">&quot;square&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:class</span>=<span class="string">&quot;!gameOver &amp;&amp; matrix[parseInt((n-1)/columnNum)][(n-1)%columnNum ] ? &#x27;black&#x27;:&#x27;&#x27;&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">v-for</span>=<span class="string">&quot;n in columnNum*rowNum&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">:id</span>=<span class="string">&quot;`$&#123;parseInt((n-1)/columnNum)&#125;-$&#123;(n-1)%columnNum &#125;`&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">v-bind:key</span>=<span class="string">&quot;n&quot;</span></span></span><br><span class="line"><span class="tag">  &gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;square-inner&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>每次掉落都会触发一次 diff， 每秒 diff 的最大复杂度 O（12 _ 22 ）， 一个周期 22 _ O（12 * 22 ）</p>
+<p>合理划分组件后： 一个周期触发一次 diff O（12 * 22 ）</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="https://github.com/apriljii">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%B8%E6%88%8F%E7%95%8C%E9%9D%A2%E5%B1%95%E7%A4%BA"><span class="toc-number">1.</span> <span class="toc-text">游戏界面展示</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E5%85%85%E6%A6%82%E5%BF%B5"><span class="toc-number">2.</span> <span class="toc-text">补充概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Dom-%E6%A0%91"><span class="toc-number">2.1.</span> <span class="toc-text">Dom 树</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%88%E7%8E%B0%E5%BC%95%E6%93%8E%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">2.2.</span> <span class="toc-text">呈现引擎的工作流程</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#webkit-%E4%B8%BB%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="toc-number">2.2.0.1.</span> <span class="toc-text">webkit 主流程：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Mozilla-%E7%9A%84-Gecko-%E4%B8%BB%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="toc-number">2.2.0.2.</span> <span class="toc-text">Mozilla 的 Gecko 主流程：</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text">Vue 基本原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Vue-%E5%86%85%E9%83%A8%E6%B5%81%E7%A8%8B"><span class="toc-number">3.1.</span> <span class="toc-text">Vue 内部流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Vue-js-%E5%BC%82%E6%AD%A5%E6%9B%B4%E6%96%B0%E5%8F%8A-nextTick"><span class="toc-number">3.2.</span> <span class="toc-text">Vue.js 异步更新及 nextTick</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VNode-%E7%BB%93%E7%82%B9"><span class="toc-number">3.3.</span> <span class="toc-text">VNode 结点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-%E7%9A%84-Diff-%E7%AE%97%E6%B3%95"><span class="toc-number">4.</span> <span class="toc-text">Vue 的 Diff 算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%96%B0%E8%80%81%E8%8A%82%E7%82%B9%E7%9A%84%E6%AF%94%E8%BE%83"><span class="toc-number">4.1.</span> <span class="toc-text">1. 新老节点的比较</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#patch-%E6%AF%94%E8%BE%83%E8%BF%87%E7%A8%8B"><span class="toc-number">4.1.1.</span> <span class="toc-text">patch 比较过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%B8%E5%90%8C%E8%8A%82%E7%82%B9-%E2%80%93-sameVNode"><span class="toc-number">4.1.2.</span> <span class="toc-text">相同节点 – sameVNode</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%9B%B8%E5%90%8C%E8%8A%82%E7%82%B9%E8%BF%9B%E8%A1%8C-patchVNode-%E6%AF%94%E8%BE%83"><span class="toc-number">4.2.</span> <span class="toc-text">2. 相同节点进行 patchVNode 比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Diff-%E7%9A%84%E6%A0%B8%E5%BF%83%E5%86%85%E5%AE%B9-%E2%80%94%E2%80%94-updateChildren"><span class="toc-number">4.3.</span> <span class="toc-text">3. Diff 的核心内容 —— updateChildren</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF"><span class="toc-number">4.3.1.</span> <span class="toc-text">循环</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E7%BB%93%E6%9D%9F"><span class="toc-number">4.3.2.</span> <span class="toc-text">循环结束</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E6%B8%B8%E6%88%8F%E7%9A%84%E6%80%A7%E8%83%BD%E9%97%AE%E9%A2%98"><span class="toc-number">5.</span> <span class="toc-text">小游戏的性能问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-number">5.1.</span> <span class="toc-text">结论</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&text=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&title=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&is_video=false&description=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=俄罗斯方块小游戏(1): Vue的diff过程&body=Check out this article: https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&title=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&title=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&title=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&title=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&name=俄罗斯方块小游戏(1): Vue的diff过程&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2019/06/17/%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97%E5%B0%8F%E6%B8%B8%E6%88%8F-1-Vue%E7%9A%84diff%E8%BF%87%E7%A8%8B/&t=俄罗斯方块小游戏(1): Vue的diff过程"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    April Ji
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="https://github.com/apriljii">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

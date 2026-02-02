@@ -1680,6 +1680,11 @@ body {
   font-size: 0.8rem;
   margin-left: 0.25rem;
 }
+@media (min-width: 480px) {
+  .content {
+    margin-top: 1rem;
+  }
+}
 body h1,
 body .h1 {
   display: block;

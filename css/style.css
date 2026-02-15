@@ -1733,7 +1733,7 @@ body hr {
 }
 body strong {
   font-weight: bold;
-  color: rgba(200,255,250,0.85);
+  color: rgba(180,255,245,0.85);
   background: rgba(255,255,255,0.08);
   padding: 1px 4px;
   border-radius: 3px;

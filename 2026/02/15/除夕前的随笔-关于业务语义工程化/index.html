@@ -14,7 +14,7 @@
 <meta property="og:description" content="关于业务语义工程化的深度思考——如何给AI装一个有长期记忆的外置大脑，解决AI到企业的最后一公里问题">
 <meta property="og:locale">
 <meta property="article:published_time" content="2026-02-15T00:00:00.000Z">
-<meta property="article:modified_time" content="2026-02-15T04:40:51.079Z">
+<meta property="article:modified_time" content="2026-02-15T05:02:04.812Z">
 <meta property="article:author" content="April Ji">
 <meta property="article:tag" content="前端架构">
 <meta property="article:tag" content="随笔">
@@ -178,9 +178,14 @@
   
 
   <div class="content e-content" itemprop="articleBody">
-    <p>明天是除夕了，最近想法很多，脑里有一张模糊的图纸。今天想写个随笔，是因为这张图似乎开始逐渐清晰了。这张图还没有人定义，我来定义一下，可能叫做<strong>“业务语义工程化”</strong>？。</p>
+    <blockquote>
+<p>关于业务语义工程化的深度思考——如何给AI装一个有长期记忆的外置大脑，解决AI到企业的最后一公里问题</p>
+</blockquote>
+<p>明天是除夕了，最近想法很多，脑里有一张模糊的图纸。今天想写个随笔，是因为这张图似乎开始逐渐清晰了。这张图还没有人定义，我来定义一下，可能叫做<strong>“业务语义工程化”</strong>？。</p>
+<!-- more -->
+
 <h2 id="从”手工业”到”标准化产线”"><a href="#从”手工业”到”标准化产线”" class="headerlink" title="从”手工业”到”标准化产线”"></a>从”手工业”到”标准化产线”</h2><p>过去几年，除了忙于开发和管项目，我一直想持续做一件事：把前端开发从<strong>“手工作坊”</strong>变成<strong>“标准化产线”</strong>——组件库、设计规范、移动端适配方案，一个一个搭起来。最近 AI 发展快，花几个月时间又做了 PRD2Code，让 AI 把需求直接转成代码。</p>
-<p>但做着做着发现一个致命问题：<strong>AI 生成的代码，字段名老是猜错</strong>——交易系统叫 order_id，账务系统叫 trans_no，客服叫 serial_number，其实都是同一个订单号。这些字段从数据库到后台，再到前端，名称从没统一过。AI 不知道，生成十次代码，七八次要返工。估算的话，每月会凭空消耗掉团队 20%–30% 的人力（数据是猜测，但我相信，带来的价值远不止）。</p>
+<p>但做着做着发现一个致命问题：<strong>AI 生成的代码，字段名老是猜错</strong>——交易系统叫 order_id，账务系统叫 trans_no，客服叫 serial_number，其实都是同一个订单号。这些字段从数据库到后台，再到前端，名称从没统一过。AI 不知道，生成十次代码，七八次要返工。估算的话，每月会凭空消耗掉团队 20%–30% 的人力（数据是猜测，但我相信，如果解决这个问题，带来的价值远不止）。</p>
 <p><strong>AI 的效能上限，取决于它对业务语义的理解深度</strong>；语义越清晰，AI 越聪明。<strong>可业务语义的混乱，AI 绕不开，只能靠人凿</strong>。</p>
 <h2 id="“字段户口簿”的构思"><a href="#“字段户口簿”的构思" class="headerlink" title="“字段户口簿”的构思"></a>“字段户口簿”的构思</h2><p>所以最近开始构思<strong>“字段户口簿”</strong>（企业级字段元数据管理平台），开始思考：</p>
 <ul>

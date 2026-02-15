@@ -1733,6 +1733,9 @@ body hr {
 }
 body strong {
   font-weight: bold;
+  color: #08ffed;
+  padding: 1px 4px;
+  border-radius: 3px;
 }
 body em,
 body cite {

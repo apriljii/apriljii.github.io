@@ -372,6 +372,7 @@ html {
   border-top: 2px solid #08ffed;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 body {
   margin: 0;
@@ -392,6 +393,7 @@ body {
   flex: 1;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 .content {
   position: relative;

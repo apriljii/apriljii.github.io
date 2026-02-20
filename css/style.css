@@ -309,7 +309,7 @@
   padding-left: 4rem;
 }
 .py4 {
-  padding-top: 6rem;
+  padding-top: 4rem;
   padding-bottom: 4rem;
 }
 .px4 {
@@ -372,7 +372,6 @@ html {
   border-top: 2px solid #08ffed;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
-  overflow-x: hidden;
 }
 body {
   margin: 0;
@@ -393,7 +392,6 @@ body {
   flex: 1;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 .content {
   position: relative;
@@ -1735,10 +1733,6 @@ body hr {
 }
 body strong {
   font-weight: bold;
-  color: rgba(180,255,245,0.85);
-  background: rgba(255,255,255,0.08);
-  padding: 1px 4px;
-  border-radius: 3px;
 }
 body em,
 body cite {

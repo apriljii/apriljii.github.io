@@ -369,10 +369,10 @@ html {
   margin: 0;
   padding: 0;
   height: 100%;
-  border-top: 2px solid #08ffed;
+  border-top: 2px solid #c9cacc;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 body {
   margin: 0;
@@ -628,13 +628,13 @@ body {
     min-height: 40px;
     flex-direction: row;
     align-items: center;
-    padding: 0.5rem;
+    padding: 1rem 0.5rem 0 0.5rem;
     gap: 0.5rem;
     display: flex;
   }
   #header .logo-area #title {
     position: relative;
-    top: 0;
+    top: 1rem;
     height: auto !important;
     line-height: normal !important;
     display: flex;
@@ -648,7 +648,7 @@ body {
     line-height: normal !important;
     margin-right: 0;
     display: block !important;
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
   #header #title {
     display: table;
@@ -667,8 +667,8 @@ body {
     width: 40px;
     height: 40px;
     position: absolute;
-    left: 0.5rem;
-    top: 50%;
+    left: 0.2rem;
+    top: -0.3rem;
     transform: translate(-48%, 5%) scale(0.8);
   }
   .watch-face .circle {

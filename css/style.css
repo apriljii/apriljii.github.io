@@ -369,7 +369,7 @@ html {
   margin: 0;
   padding: 0;
   height: 100%;
-  border-top: 2px solid #c9cacc;
+  border-top: 2px solid #08ffed;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   overflow: hidden;
@@ -631,10 +631,12 @@ body {
     padding: 1rem 0.5rem 0 0.5rem;
     gap: 0.5rem;
     display: flex;
+    top: -16px;
+    left: 24px;
   }
   #header .logo-area #title {
     position: relative;
-    top: 1rem;
+    top: 0.5rem;
     height: auto !important;
     line-height: normal !important;
     display: flex;

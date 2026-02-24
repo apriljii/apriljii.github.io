@@ -395,6 +395,11 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
+@media (min-width: 480px) {
+  body {
+    font-size: 16px;
+  }
+}
 .content {
   position: relative;
   display: flex;
@@ -1713,7 +1718,7 @@ body .h2 {
 body h3 {
   color: #c9cacc;
   font-weight: bold;
-  font-size: 0.9rem;
+  font-size: inherit;
 }
 body h4,
 body h5,
@@ -1785,7 +1790,7 @@ body table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 12px;
+  font-size: 13px;
   overflow: auto;
   display: block;
 }
@@ -1916,6 +1921,7 @@ article .content blockquote {
   color: #ccffb6;
   quotes: "\201C" "\201D" "\2018" "\2019";
   font-weight: bold;
+  font-size: 1.1em;
 }
 article .content blockquote p {
   margin: 0;
@@ -1994,6 +2000,10 @@ article .content .caption {
   .article-tag:before,
   .article-category:before {
     content: "|";
+  }
+  body h2,
+  body .h2 {
+    font-size: 1.25em;
   }
 }
 @media (max-width: 480px) {
@@ -2641,4 +2651,67 @@ code {
 }
 #header-post #actions {
   direction: ltr !important;
+}
+/* Mermaid diagram controls */
+pre.mermaid {
+  position: relative;
+}
+.mermaid-diagram-wrapper {
+  position: relative;
+  overflow: auto;
+}
+.mermaid-diagram {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+.mermaid-controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+.mermaid-controls.visible,
+.mermaid-diagram-wrapper:hover .mermaid-controls {
+  opacity: 1;
+}
+.mermaid-controls button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(128,128,128,0.3);
+  border-radius: 4px;
+  background: rgba(30,30,30,0.8);
+  color: #ccc;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.mermaid-controls button:hover {
+  background: rgba(50,50,50,0.9);
+  color: #fff;
+  border-color: rgba(128,128,128,0.6);
+}
+/* Fullscreen mode */
+pre.mermaid:fullscreen {
+  background: rgba(20,20,20,0.95);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 20px;
+}
+pre.mermaid:fullscreen .mermaid-diagram-wrapper {
+  flex: 1;
+  overflow: auto;
+}
+pre.mermaid:fullscreen .mermaid-controls {
+  position: fixed;
+  top: 20px;
+  right: 20px;
 }

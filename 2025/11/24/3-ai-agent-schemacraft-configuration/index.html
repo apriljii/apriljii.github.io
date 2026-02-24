@@ -6,15 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="详细介绍 UniCraft 低代码平台的 AI agent SchemaCraft 配置过程，包括 HiAgent 平台集成、模型配置、提示词工程和知识库搭建">
+    <meta name="description" content="详细介绍 Prod2Code 低代码平台的 AI agent SchemaCraft 配置过程，包括 HiAgent 平台集成、模型配置、提示词工程和知识库搭建">
 <meta property="og:type" content="article">
-<meta property="og:title" content="UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南">
+<meta property="og:title" content="Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南">
 <meta property="og:url" content="https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/index.html">
 <meta property="og:site_name" content="April">
-<meta property="og:description" content="详细介绍 UniCraft 低代码平台的 AI agent SchemaCraft 配置过程，包括 HiAgent 平台集成、模型配置、提示词工程和知识库搭建">
+<meta property="og:description" content="详细介绍 Prod2Code 低代码平台的 AI agent SchemaCraft 配置过程，包括 HiAgent 平台集成、模型配置、提示词工程和知识库搭建">
 <meta property="og:locale">
 <meta property="article:published_time" content="2025-11-24T00:00:00.000Z">
-<meta property="article:modified_time" content="2026-01-31T10:08:15.187Z">
+<meta property="article:modified_time" content="2026-02-24T09:47:59.773Z">
 <meta property="article:author" content="April Ji">
 <meta property="article:tag" content="lowcode">
 <meta property="article:tag" content="ai-agent">
@@ -42,7 +42,7 @@
       
     
     <!-- title -->
-    <title>UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南</title>
+    <title>Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南</title>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -70,6 +70,7 @@
 			securityLevel: 'loose'
 		});
 	</script>
+	<script src="/js/mermaid-controls.js"></script>
 <meta name="generator" content="Hexo 7.3.0"></head>
 
 <body class="max-width mx-auto px3 ltr">
@@ -96,7 +97,7 @@
     <span id="actions">
       <ul>
         
-        <li><a class="icon" aria-label="Previous post" href="/2026/02/15/%E9%99%A4%E5%A4%95%E5%89%8D%E7%9A%84%E9%9A%8F%E7%AC%94-%E5%85%B3%E4%BA%8E%E4%B8%9A%E5%8A%A1%E8%AF%AD%E4%B9%89%E5%B7%A5%E7%A8%8B%E5%8C%96/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Previous post" href="/2026/02/11/01-%E5%AD%97%E6%AE%B5%E6%88%B7%E5%8F%A3%E7%B0%BF%E7%9A%84%E6%9E%84%E6%80%9D/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
         <li><a class="icon" aria-label="Next post" href="/2025/11/23/2-code-generator-core-principles/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
@@ -113,16 +114,16 @@
     <div id="share" style="display: none">
       <ul>
   <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&text=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&is_video=false&description=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南&body=Check out this article: https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&name=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&t=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&text=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&is_video=false&description=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南&body=Check out this article: https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&name=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&t=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -148,7 +149,7 @@
   <header>
     
     <h1 class="posttitle p-name" itemprop="name headline">
-        UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南
+        Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南
     </h1>
     
 
@@ -181,7 +182,7 @@
   
 
   <div class="content e-content" itemprop="articleBody">
-    <h1 id="AI-Agent-SchemaCraft-配置指南"><a href="#AI-Agent-SchemaCraft-配置指南" class="headerlink" title="AI Agent SchemaCraft 配置指南"></a>AI Agent SchemaCraft 配置指南</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>SchemaCraft 是 UniCraft 低代码平台的核心 AI 组件，负责将自然语言业务需求转换为符合规范的 Vue 组件 SchemaNode 配置。本指南详细介绍如何在 HiAgent 平台配置和部署 SchemaCraft Agent。</p>
+    <h1 id="AI-Agent-SchemaCraft-配置指南"><a href="#AI-Agent-SchemaCraft-配置指南" class="headerlink" title="AI Agent SchemaCraft 配置指南"></a>AI Agent SchemaCraft 配置指南</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>SchemaCraft 是 Prod2Code 低代码平台的核心 AI 组件，负责将自然语言业务需求转换为符合规范的 Vue 组件 SchemaNode 配置。本指南详细介绍如何在 HiAgent 平台配置和部署 SchemaCraft Agent。</p>
 <h2 id="核心架构"><a href="#核心架构" class="headerlink" title="核心架构"></a>核心架构</h2><h3 id="Agent-功能定位"><a href="#Agent-功能定位" class="headerlink" title="Agent 功能定位"></a>Agent 功能定位</h3><p>SchemaCraft Agent 作为低代码平台的”翻译器”，将用户的自然语言描述转换为结构化的组件配置：</p>
 <ul>
 <li><strong>输入</strong>: 自然语言业务需求（如”创建一个用户注册表单”）</li>
@@ -439,16 +440,16 @@
     <div id="share-footer" style="display: none">
       <ul>
   <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&text=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&is_video=false&description=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南&body=Check out this article: https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&name=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&t=UniCraft AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&text=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&is_video=false&description=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南&body=Check out this article: https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&title=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&name=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://apriljii.github.io/2025/11/24/3-ai-agent-schemacraft-configuration/&t=Prod2Code AI转码平台 - 3. AI Agent SchemaCraft 配置指南"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>

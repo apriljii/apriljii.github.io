@@ -69,7 +69,14 @@
 		mermaid.initialize({
 			startOnLoad: true,
 			theme: 'dark',
-			securityLevel: 'loose'
+			securityLevel: 'loose',
+			fontFamily: 'sans-serif',
+			flowchart: {
+				wrap: true
+			},
+			sequence: {
+				wrap: true
+			}
 		});
 	</script>
 	<script src="/js/mermaid-controls.js"></script>
